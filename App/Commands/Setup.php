@@ -78,6 +78,9 @@ class Setup extends Command {
         ."https://github.com/baumrock/RockMigrations/archive/refs/heads/main.zip");
 
       if($this->confirm("Did you download RockMigrations and want to install it?", true)) {
+        $this->write("Refreshing modules...");
+        $this->wire()->modules->refresh();
+        $this->write("Installing RockMigrations...");
         $this->wire()->modules->install("RockMigrations");
       }
     }
