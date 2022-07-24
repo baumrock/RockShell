@@ -9,7 +9,7 @@ use Symfony\Component\HttpClient\HttpClient;
 class Install extends Command {
 
   /** @var HttpBrowser */
-  private $browser;
+  protected $browser;
 
   private $host;
 

@@ -15,14 +15,20 @@ class Command extends ConsoleCommand {
    */
   public $app;
 
-  /** @var ReflectionClass */
-  protected $reflect;
+  /** @var HttpBrowser */
+  protected $browser;
 
   /** @var InputInterface */
   protected $input;
 
   /** @var OutputInterface */
   protected $output;
+
+  /** @var ReflectionClass */
+  protected $reflect;
+
+  /** @var  */
+  private $wire;
 
   public function __construct($name = null) {
     $this->reflect = new ReflectionClass($this); // very first!
@@ -83,10 +89,48 @@ class Command extends ConsoleCommand {
   }
 
   /**
+   * Filter dom for current selector and print output to console
+   * @return void
+   */
+  public function filter($selector) {
+    echo $this->browser->getCrawler()->filter($selector)->outerHtml();
+  }
+
+  /**
+   * Get config from $config->rockshell
+   * @return mixed
+   */
+  public function getConfig($prop = null) {
+    $config = $this->wire()->config->rockshell;
+    if(!$config) return false;
+    if($prop) {
+      if(array_key_exists($prop, $config)) return $config[$prop];
+      else return $this->error("Property '$prop' not found in config");
+    }
+    return $config;
+  }
+
+  /**
    * Execute this command
    */
   public function handle() {
     throw new LogicException('You must override the handle() method in your command.');
+  }
+
+  /**
+   * Check if domelement has given class
+   */
+  public function hasClass($el, $class) {
+    $classes = explode(" ", $el->getAttribute('class'));
+    return in_array($class, $classes);
+  }
+
+  /**
+   * Print the current html to console in interactive mode
+   * @return void
+   */
+  public function html() {
+    echo $this->browser->getInternalResponse()->getContent();
   }
 
   /**
@@ -204,10 +248,8 @@ class Command extends ConsoleCommand {
    *                         to select from
    * @return string
    */
-  function randomStr(
-    $length = 0,
-    $keyspace = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
-  ) {
+  function randomStr($length = 0, $keyspace = null) {
+    if(!$keyspace) $keyspace = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
     if(!$length) $length = rand(10, 15);
     $str = '';
     $max = mb_strlen($keyspace, '8bit') - 1;
@@ -298,6 +340,17 @@ class Command extends ConsoleCommand {
    */
   public function trailingSlash($path) {
     return rtrim($this->normalizeSeparators($path), "/")."/";
+  }
+
+  /**
+   * Get wire instance
+   * @return Wire
+   */
+  public function wire() {
+    if($this->wire) return $this->wire;
+    chdir($this->app->rootPath());
+    include 'index.php';
+    return $this->wire = $wire;
   }
 
   /**
