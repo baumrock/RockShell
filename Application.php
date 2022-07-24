@@ -70,6 +70,7 @@ class Application extends ConsoleApplication {
       $this->root."RockShell/App/",
       $this->root."site/modules",
     ];
+    $files = array();
     foreach($roots as $root) {
       if(!is_dir($root)) continue;
       $directory = new \RecursiveDirectoryIterator(
@@ -77,7 +78,6 @@ class Application extends ConsoleApplication {
         \FilesystemIterator::FOLLOW_SYMLINKS
       );
       $iterator = new \RecursiveIteratorIterator($directory);
-      $files = array();
       foreach($iterator as $info) {
         if($info->getExtension() !== 'php') continue;
         $filename = $this->normalizeSeparators($info->getPathname());
