@@ -311,7 +311,12 @@ class Command extends ConsoleCommand {
    * @return string
    */
   public function stub($file) {
-    return $this->shellPath()."stubs/$file";
+    // the RockShell module has an App folder
+    // all other modules do not have this folder
+    if(is_dir($this->shellPath()."App"))
+      return $this->shellPath()."App/stubs/$file";
+    else
+      return $this->shellPath()."stubs/$file";
   }
 
   /**
@@ -320,6 +325,7 @@ class Command extends ConsoleCommand {
    */
   public function stubPopulate($src, $dst, $vars = []) {
     $content = file_get_contents($src);
+    $this->write("Writing $src to $dst");
     foreach($vars as $k=>$v) {
       $content = str_replace("{".$k."}", $v, $content);
     }

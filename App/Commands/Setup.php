@@ -8,6 +8,21 @@ class Setup extends Command {
   }
 
   public function handle() {
+    // add gitignore
+    $this->write('Updating .gitignore ...');
+    $dst = $this->app->rootPath().".gitignore";
+    $write = true;
+    if(is_file($dst)) {
+      if(!$this->confirm("$dst exists - overwrite it?", false)) {
+        $this->write("Leaving .gitignore as is...");
+        $write = false;
+      }
+    }
+    if($write) {
+      $src = $this->stub('.gitignore');
+      $this->stubPopulate($src, $dst);
+    }
+
     // add config-local.php
     $split = !is_file($this->wire()->config->paths->site."config-local.php");
     if($split AND $this->confirm("Split config into config.php and config-local.php?", true)) {
@@ -40,21 +55,6 @@ class Setup extends Command {
       if($this->confirm("Remove comments from config.php?", true)) {
         $this->removeComments();
       }
-    }
-
-    // add gitignore
-    $this->write('Updating .gitignore ...');
-    $dst = $this->app->rootPath().".gitignore";
-    $write = true;
-    if(is_file($dst)) {
-      if(!$this->confirm("$dst exists - overwrite it?", false)) {
-        $this->write("Leaving .gitignore as is...");
-        $write = false;
-      }
-    }
-    if($write) {
-      $src = $this->stub('.gitignore');
-      $this->stubPopulate($src, $dst);
     }
 
     $this->write("If you want, you can now manually cleanup your files and commit your changes.");
