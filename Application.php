@@ -4,7 +4,7 @@ use Illuminate\Console\Application as ConsoleApplication;
 use Illuminate\Container\Container;
 use Illuminate\Events\Dispatcher;
 
-require_once(__DIR__."/App/Command.php");
+require_once __DIR__."/App/Command.php";
 class Application extends ConsoleApplication {
 
   /**
