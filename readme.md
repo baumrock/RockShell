@@ -4,6 +4,15 @@ RockShell is a wrapper around the `symfony/console` component and inspired by La
 
 See https://symfony.com/doc/current/components/console.html and https://laravel.com/docs/8.x/artisan
 
+## Kickstart a PW Project
+
+```sh
+git init
+git submodule add git@github.com:baumrock/RockShell.git
+cp RockShell/App/stubs/rs .
+php rs install
+```
+
 ## How to use RockShell
 
 Simply execute the rockshell file from your command line via your PHP interpreter:
