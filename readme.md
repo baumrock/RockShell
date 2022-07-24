@@ -9,20 +9,20 @@ See https://symfony.com/doc/current/components/console.html and https://laravel.
 Simply execute the rockshell file from your command line via your PHP interpreter:
 
 ```sh
-php /path/to/your/project/RockShell/rshell
+php /path/to/your/project/RockShell/rs
 ```
 
 If you want to use rockshell from your PW root directory you can copy it there (you only need to do that once for your project):
 
 ```sh
 cd /path/to/your/project
-cp RockShell/App/stubs/rshell .
+cp RockShell/App/stubs/rs .
 ```
 
 Then you can call rockshell from your PW root like this:
 
 ```sh
-php rshell
+php rs
 ```
 
 ## Creating custom commands
