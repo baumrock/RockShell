@@ -39,8 +39,10 @@ class Download extends Command {
     $this->exec("rm $version.zip");
     $this->exec("mv processwire-$version pwtmp
       mv pwtmp/* .
-      mv pwtmp/.* .
-      rm -rf pwtmp");
+      mv pwtmp/.* .");
+
+    sleep(1);
+    $this->exec("rm -rf pwtmp");
 
     return self::SUCCESS;
   }

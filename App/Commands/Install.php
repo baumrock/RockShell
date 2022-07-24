@@ -288,6 +288,8 @@ class Install extends Command {
       }
       elseif($name == 'admin_name') {
         $label = "Enter url of your admin interface";
+        $value = $this->ask($label, "processwire");
+        if($this->output->isVerbose()) $this->write("$name=$value");
       }
       elseif($name == 'userpass_confirm') {
         $value = $this->askWithCompletion($name, $options, $pass);
@@ -366,7 +368,7 @@ class Install extends Command {
     $h1 = $this->browser->getCrawler()->filter('h1');
     $h1 = $h1->count() ? $h1->outerHtml() : '';
     if($h1 !== '<h1 class="uk-margin-remove-top">ProcessWire 3.x Installer</h1>') {
-      $this->warn('ProcessWire Installer not found');
+      $this->write('No ProcessWire Installer found');
       if(is_file($this->app->rootPath()."index.php")) {
         $this->write("");
         $this->error("Found index.php - aborting...");
@@ -418,7 +420,7 @@ class Install extends Command {
       $status = $this->browser->getInternalResponse()->getStatusCode();
       if($status !== 404) {
         $this->error("Your host $host must be reachable via HTTP!");
-        $this->error("When using DDEV make sure it is running ;)");
+        $this->error("When using DDEV make sure it is running...");
         exit(1);
       }
     }
