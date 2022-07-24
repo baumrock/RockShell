@@ -10,7 +10,6 @@ See https://symfony.com/doc/current/components/console.html and https://laravel.
 git init
 git submodule add git@github.com:baumrock/RockShell.git
 cp RockShell/App/stubs/rs .
-php rs install
 ```
 
 ## How to use RockShell
