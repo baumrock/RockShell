@@ -286,6 +286,9 @@ class Install extends Command {
         if($this->output->isVerbose()) $this->write("$name=".implode(",", $hosts));
         $value = implode("\n", $hosts);
       }
+      elseif($name == 'admin_name') {
+        $label = "Enter url of your admin interface";
+      }
       elseif($name == 'userpass_confirm') {
         $value = $this->askWithCompletion($name, $options, $pass);
         if($this->output->isVerbose()) $this->write("$name=$value");
