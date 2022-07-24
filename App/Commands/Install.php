@@ -209,7 +209,7 @@ class Install extends Command {
         ."##### INSTALL SUCCESSFUL ######\n"
         ."### powered by baumrock.com ###");
       $this->warn("Login: $url");
-      $this->warn("\n##### You can now call pw:setup #####\n");
+      $this->warn("\n##### You can now call php rs setup #####\n");
       die();
     }
   }
