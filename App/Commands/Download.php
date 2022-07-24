@@ -1,0 +1,50 @@
+<?php namespace RockShell;
+
+use Symfony\Component\Console\Input\InputArgument;
+
+class Download extends Command {
+
+  public function config() {
+    $this
+      ->setDescription("Download ProcessWire")
+      ->addArgument("version", InputArgument::OPTIONAL,
+        "ProcessWire version (master/dev)")
+    ;
+  }
+
+  public function handle() {
+    $path = $this->app->rootPath();
+    $version = $this->argument('version')
+      ?: $this->askWithCompletion(
+        "Which version?",
+        ['master', 'dev'],
+        'dev'
+      );
+    $this->write("Downloading ProcessWire($version) to $path ...");
+    $this->exec("wget https://github.com/processwire/processwire/archive/$version.zip");
+
+    $this->write("Extracting files...");
+    $this->exec("unzip -q $version.zip");
+
+    // wait for unzip to be ready
+    $cnt = 0;
+    while(!is_dir("processwire-$version") AND ++$cnt < 30) {
+      $this->write("waiting for unzip...");
+      sleep(1);
+    }
+
+    // cleanup
+    // $this->exec("rm -rf processwire-$version");
+    $this->write("Cleaning up temporary files...");
+    $this->exec("rm $version.zip");
+    $this->exec("mv processwire-$version processwire
+      cp -r site/modules/RockMigrations processwire/site-blank/modules
+      rm -rf site
+      mv processwire/* .
+      mv processwire/.* .
+      ");
+
+    return self::SUCCESS;
+  }
+
+}
