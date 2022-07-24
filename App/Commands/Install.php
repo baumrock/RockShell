@@ -8,6 +8,9 @@ use Symfony\Component\HttpClient\HttpClient;
 
 class Install extends Command {
 
+  /** @var HttpBrowser */
+  private $browser;
+
   private $host;
 
   private $skipWelcome = false;
@@ -401,9 +404,22 @@ class Install extends Command {
 
   public function host($site) {
     $site = ltrim($site, "/");
+    $checkHTTP = !$this->host;
     $host = $this->host ?: $this->option('host')
       ?: $this->ask('Enter host, eg example.ddev.site');
     $this->host = $host;
+
+    // check if host is reachable via HTTP
+    if($checkHTTP) {
+      $this->browser->request("GET", $host);
+      $status = $this->browser->getInternalResponse()->getStatusCode();
+      if($status !== 404) {
+        $this->error("Your host $host must be reachable via HTTP!");
+        $this->error("When using DDEV make sure it is running ;)");
+        exit(1);
+      }
+    }
+
     return "https://$host/$site";
   }
 
