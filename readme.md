@@ -7,9 +7,11 @@ See https://symfony.com/doc/current/components/console.html and https://laravel.
 ## Kickstart a PW Project
 
 ```sh
+cd /path/to/your/project
 git init
 git submodule add git@github.com:baumrock/RockShell.git
-cp RockShell/App/stubs/rs .
+cd RockShell
+php rockshell pw-install
 ```
 
 ## How to use RockShell
@@ -17,20 +19,11 @@ cp RockShell/App/stubs/rs .
 Simply execute the rockshell file from your command line via your PHP interpreter:
 
 ```sh
-php /path/to/your/project/RockShell/rs
-```
+php /path/to/your/project/RockShell/rockshell
 
-If you want to use rockshell from your PW root directory you can copy it there (you only need to do that once for your project):
-
-```sh
-cd /path/to/your/project
-cp RockShell/App/stubs/rs .
-```
-
-Then you can call rockshell from your PW root like this:
-
-```sh
-php rs
+# or
+cd /path/to/your/project/RockShell
+php rockshell
 ```
 
 ## Creating custom commands

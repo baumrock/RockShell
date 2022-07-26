@@ -1,5 +1,5 @@
 <?php namespace RockShell;
-class Setup extends Command {
+class PwSetup extends Command {
 
   public function config() {
     $this
