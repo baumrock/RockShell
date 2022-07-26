@@ -6,7 +6,7 @@ use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\DomCrawler\Field\ChoiceFormField;
 use Symfony\Component\HttpClient\HttpClient;
 
-class Install extends Command {
+class PwInstall extends Command {
 
   /** @var HttpBrowser */
   protected $browser;
@@ -380,10 +380,10 @@ class Install extends Command {
         $version = $this->option('dev')
           ? 'dev'
           : $this->choice("Which version?", $versions, "dev");
-        $this->call("download", [
-          'version' => $version,
-        ]);
+
+        $this->call("pw-download", ['version' => $version]);
         sleep(1);
+
         return $this->nextStep(true);
       }
       $this->warn("Aborting...");
