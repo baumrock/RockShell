@@ -2,7 +2,7 @@
 
 use Symfony\Component\Console\Input\InputArgument;
 
-class Download extends Command {
+class PwDownload extends Command {
 
   public function config() {
     $this
