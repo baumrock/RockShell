@@ -90,10 +90,6 @@ class DbRestore extends Command {
       $this->warn("\nRunning migrations...");
       $this->exec("php site/modules/RockMigrations/migrate.php");
     }
-    else {
-      $this->write("Aborting...");
-      return self::SUCCESS;
-    }
 
     // show login message
     $this->warn("Login URL of your site: ".$wire->pages->get(2)->httpUrl);
