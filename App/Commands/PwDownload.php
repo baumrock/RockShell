@@ -14,6 +14,7 @@ class PwDownload extends Command {
 
   public function handle() {
     $path = $this->app->rootPath();
+    chdir($path);
     $version = $this->argument('version')
       ?: $this->askWithCompletion(
         "Which version?",
