@@ -64,7 +64,6 @@ class DbPull extends Command {
     $this->call("db-restore", [
       '--y' => true,
       '--file' => 'tmp.sql',
-      '--php' => $php,
     ]);
 
     if(!$this->option('keep')) {

@@ -17,7 +17,6 @@ class DbRestore extends Command {
       ->addOption("name",           null, InputOption::VALUE_OPTIONAL,  "Name of superuser")
       ->addOption("pass",           "p",  InputOption::VALUE_OPTIONAL,  "Password of superuser")
       ->addOption("migrate",        "m",  InputOption::VALUE_NONE,      "Run migrations after restore")
-      ->addOption("php",            null, InputOption::VALUE_OPTIONAL,  "PHP command to use, eg keyhelp-php81")
     ;
   }
 
@@ -79,11 +78,10 @@ class DbRestore extends Command {
     }
 
     // run migrations?
-    $php = $this->option('php') ?: 'php';
     if($this->option('y') OR $this->option("migrate")
       OR $this->confirm("Do you want to run migrations now?")) {
       $this->warn("\nRunning migrations...");
-      $this->exec("$php site/modules/RockMigrations/migrate.php");
+      $this->exec("php site/modules/RockMigrations/migrate.php");
     }
 
     // show login message
