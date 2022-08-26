@@ -19,7 +19,7 @@ class Application extends ConsoleApplication {
    */
   private $root;
 
-  public function __construct($name = "RockShell", $version = "1.0.0") {
+  public function __construct($name = "RockShell", $version = "1.0.1") {
     $container = new Container;
     $events = new Dispatcher($container);
     parent::__construct($container, $events, $version);

@@ -26,6 +26,23 @@ cd /path/to/your/project/RockShell
 php rockshell
 ```
 
+### Setting up remotes
+
+```php
+$config->rockshell = [
+  'remotes' => [
+    'staging' => [
+      'ssh' => 'user@host.com',
+      'dir' => '/path/to/your/site',
+    ],
+    'production' => [
+      'ssh' => 'user@host.com',
+      'dir' => '/path/to/your/site',
+    ],
+  ],
+];
+```
+
 ## Creating custom commands
 
 ## Creating custom base commands

@@ -21,9 +21,10 @@ class DbPull extends Command {
   public function config() {
     $this
       ->setDescription("Pull a database dump from remote server")
-      ->addArgument("remote", InputArgument::OPTIONAL)
-      ->addOption("list", "l", InputOption::VALUE_NONE, "List remotes")
-      ->addOption("keep", "k", InputOption::VALUE_NONE, "Keep tmp.sql after restore")
+      ->addArgument("remote",         InputArgument::OPTIONAL)
+      ->addOption("list",       "l",  InputOption::VALUE_NONE,      "List remotes")
+      ->addOption("keep",       "k",  InputOption::VALUE_NONE,      "Keep tmp.sql after restore")
+      ->addOption("php",        "p",  InputOption::VALUE_OPTIONAL,  "PHP command to use, eg keyhelp-php81")
     ;
   }
 
@@ -42,6 +43,8 @@ class DbPull extends Command {
       $this->write($remotes);
     }
 
+    $php = $this->option('php') ?: 'php';
+
     // connect to remote
     $remoteName = $this->argument("remote") ?: $this->choice("Choose remote", array_keys($remotes));
     $remote = (object)$remotes[$remoteName];
@@ -50,7 +53,7 @@ class DbPull extends Command {
     $folder = trim(DbDump::backupdir, "/");
     $this->write("Creating remote dump...");
     $this->sshExec($ssh, "cd $dir
-      php RockShell/rockshell db-dump -f tmp.sql");
+      $php RockShell/rockshell db-dump -f tmp.sql");
 
     $this->write("Copying dump to local...");
     $this->exec("scp $ssh:$dir/$folder/tmp.sql {$wire->config->paths->root}/$folder/tmp.sql");
@@ -61,6 +64,7 @@ class DbPull extends Command {
     $this->call("db-restore", [
       '--y' => true,
       '--file' => 'tmp.sql',
+      '--php' => $php,
     ]);
 
     if(!$this->option('keep')) {
