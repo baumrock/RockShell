@@ -43,7 +43,6 @@ class DbPull extends Command {
       $this->write($remotes);
     }
 
-    $php = $this->option('php') ?: 'php';
 
     // connect to remote
     $remoteName = $this->argument("remote") ?: $this->choice("Choose remote", array_keys($remotes));
@@ -51,7 +50,9 @@ class DbPull extends Command {
     $ssh = $remote->ssh;
     $dir = rtrim($remote->dir, "/");
     $folder = trim(DbDump::backupdir, "/");
+
     $this->write("Creating remote dump...");
+    $php = $this->option('php') ?: $this->getConfig('remotePHP') ?: 'php';
     $this->sshExec($ssh, "cd $dir
       $php RockShell/rockshell db-dump -f tmp.sql");
 

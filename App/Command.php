@@ -100,12 +100,15 @@ class Command extends ConsoleCommand {
    * Get config from $config->rockshell
    * @return mixed
    */
-  public function getConfig($prop = null) {
+  public function getConfig($prop = null, $quiet = true) {
     $config = $this->wire()->config->rockshell;
     if(!$config) return false;
     if($prop) {
       if(array_key_exists($prop, $config)) return $config[$prop];
-      else return $this->error("Property '$prop' not found in config");
+      else {
+        if($quiet) return false;
+        else return $this->error("Property '$prop' not found in config");
+      }
     }
     return $config;
   }
