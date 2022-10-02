@@ -22,7 +22,7 @@ class Application extends ConsoleApplication
    */
   private $root;
 
-  public function __construct($name = "RockShell", $version = "1.0.2")
+  public function __construct($name = "RockShell", $version = "1.0.3")
   {
     $container = new Container;
     $events = new Dispatcher($container);
@@ -40,7 +40,16 @@ class Application extends ConsoleApplication
     if (!is_file($file)) return;
     require_once($file);
     $name = pathinfo($file, PATHINFO_FILENAME);
-    $class = "\RockShell\\$name";
+    $root = $this->root . "RockShell/App/Commands/";
+    if (strpos($file, $root) === 0) {
+      $namespace = "\RockShell";
+    } else {
+      // get namespace from module name:
+      // /site/modules/FooModule/RockShell/Commands/FooCommand.php
+      // would be namespace "FooModule"
+      $namespace = basename(dirname(dirname(dirname($file))));
+    }
+    $class = "$namespace\\$name";
     $command = new $class();
     $command->app = $this;
     $this->add($command);

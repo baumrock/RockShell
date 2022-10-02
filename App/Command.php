@@ -5,6 +5,7 @@ namespace RockShell;
 use Exception;
 use Illuminate\Console\Command as ConsoleCommand;
 use LogicException;
+use ProcessWire\ProcessWire;
 use ReflectionClass;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -380,7 +381,7 @@ class Command extends ConsoleCommand
 
   /**
    * Get wire instance
-   * @return Wire
+   * @return ProcessWire
    */
   public function wire()
   {
