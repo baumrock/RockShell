@@ -1,4 +1,7 @@
-<?php namespace ProcessWire;
+<?php
+
+namespace ProcessWire;
+
 /** @var Config $config */
 $config->debug = true;
 $config->advanced = true;
@@ -9,6 +12,7 @@ $config->dbHost = 'db';
 $config->userAuthSalt = '{userAuthSalt}';
 $config->tableSalt = '{tableSalt}';
 $config->httpHosts = ['{host}'];
+$config->sessionFingerprint = false;
 
 // RockMigrations files on demand feature
 // $config->filesOnDemand = 'https://your-live.site/';
