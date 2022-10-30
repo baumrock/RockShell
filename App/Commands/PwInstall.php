@@ -436,7 +436,7 @@ class PwInstall extends Command
       }
     }
 
-    return "https://$host/$site";
+    return "http://$host/$site";
   }
 
   public function writeNotes()
