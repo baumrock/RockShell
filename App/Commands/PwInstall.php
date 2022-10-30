@@ -433,6 +433,8 @@ class PwInstall extends Command
         $this->error("Your host $host must be reachable via HTTP!");
         $this->error("When using DDEV make sure it is running...");
         exit(1);
+      } else {
+        $this->success("HTTP status check for host $host was OK");
       }
     }
 
