@@ -14,6 +14,9 @@ $config->tableSalt = '{tableSalt}';
 $config->httpHosts = ['{host}'];
 $config->sessionFingerprint = false;
 
+// RockFrontend
+$config->livereload = 1;
+
 // RockMigrations files on demand feature
 // $config->filesOnDemand = 'https://your-live.site/';
 
