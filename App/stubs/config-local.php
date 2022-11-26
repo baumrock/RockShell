@@ -17,8 +17,11 @@ $config->sessionFingerprint = false;
 // RockFrontend
 $config->livereload = 1;
 
-// RockMigrations files on demand feature
+// RockMigrations
 // $config->filesOnDemand = 'https://your-live.site/';
+$config->rockmigrations = [
+  'syncSnippets' => true,
+];
 
 // tracy config for ddev development
 $config->tracy = [
