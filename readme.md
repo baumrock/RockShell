@@ -30,6 +30,8 @@ php rockshell
 
 ```php
 $config->rockshell = [
+  // optional: use different php version
+  // 'remotePHP' => 'keyhelp-php81',
   'remotes' => [
     'staging' => [
       'ssh' => 'user@host.com',
