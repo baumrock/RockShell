@@ -35,6 +35,9 @@ site/assets/pwpc
 .ddev
 !.ddev/config.yaml
 
+# ignore vscode snippets
+.vscode
+
 ## ignore admin theme
 ## will be created by rockless
 site/assets/admin.css
