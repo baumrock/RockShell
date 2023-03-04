@@ -22,8 +22,11 @@ class Application extends ConsoleApplication
    */
   private $root;
 
-  public function __construct($name = "RockShell", $version = "1.0.3")
+  public function __construct($name = "RockShell", $version = null)
   {
+    if (!$version) {
+      $version = json_decode(file_get_contents(__DIR__ . "/package.json"))->version;
+    }
     $container = new Container;
     $events = new Dispatcher($container);
     parent::__construct($container, $events, $version);
