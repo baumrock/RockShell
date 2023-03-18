@@ -1,41 +1,46 @@
-<?php namespace RockShell;
-class PwSetup extends Command {
+<?php
 
-  public function config() {
+namespace RockShell;
+
+class PwSetup extends Command
+{
+
+  public function config()
+  {
     $this
-      ->setDescription("Create an Opinionated PW Project Setup")
-    ;
+      ->setDescription("Create an Opinionated PW Project Setup");
   }
 
-  public function handle() {
+  public function handle()
+  {
     // add gitignore
     $this->write('Updating .gitignore ...');
-    $dst = $this->app->rootPath().".gitignore";
+    $dst = $this->app->rootPath() . ".gitignore";
     $write = true;
-    if(is_file($dst)) {
-      if(!$this->confirm("$dst exists - overwrite it?", false)) {
+    if (is_file($dst)) {
+      if (!$this->confirm("$dst exists - overwrite it?", false)) {
         $this->write("Leaving .gitignore as is...");
         $write = false;
       }
     }
-    if($write) {
+    if ($write) {
       $src = $this->stub('.gitignore');
       $this->stubPopulate($src, $dst);
     }
 
     // add config-local.php
-    $split = !is_file($this->wire()->config->paths->site."config-local.php");
-    if($split AND $this->confirm("Split config into config.php and config-local.php?", true)) {
+    $split = !is_file($this->wire()->config->paths->site . "config-local.php");
+    if ($split and $this->confirm("Split config into config.php and config-local.php?", true)) {
       $this->warn('Adding config-local.php ...');
-      $dst = $this->app->rootPath()."site/config-local.php";
+      $dst = $this->app->rootPath() . "site/config-local.php";
       $write = true;
-      if(is_file($dst)) {
-        if(!$this->confirm("$dst exists - overwrite it?", false)) {
+      if (is_file($dst)) {
+        if (!$this->confirm("$dst exists - overwrite it?", false)) {
           $this->write("Aborting...");
           $write = false;
         }
       }
-      if($write) {
+      if ($write) {
         $src = $this->stub('config-local.php');
         $config = $this->wire()->config;
         $this->stubPopulate($src, $dst, [
@@ -47,37 +52,36 @@ class PwSetup extends Command {
 
       // update config.php
       $this->write('Updating config.php ...');
-      $dst = $this->app->rootPath()."site/config.php";
+      $dst = $this->app->rootPath() . "site/config.php";
       $content = file_get_contents($dst);
       $stub = file_get_contents($this->stub('config.php'));
-      file_put_contents($dst, $content.$stub);
+      file_put_contents($dst, $content . $stub);
       $this->removeSalts();
-      if($this->confirm("Remove comments from config.php?", true)) {
+      if ($this->confirm("Remove comments from config.php?", true)) {
         $this->removeComments();
       }
     }
 
-    $this->write("If you want, you can now manually cleanup your files and commit your changes.");
-    if($this->confirm("Continue?", true)) {
+    $this->question("If you want, you can now manually cleanup your files and commit your changes.");
+    if ($this->confirm("Continue?", true)) {
       // just wait for confirmation
-    }
-    else {
+    } else {
       $this->error("Aborting...");
       exit(1);
     }
 
-    if(!$this->wire()->modules->isInstalled("RockMigrations")) {
+    if (!$this->wire()->modules->isInstalled("RockMigrations")) {
       $this->warn("You can now install RockMigrations...");
-      $path = $this->wire()->config->paths->root."site/modules";
+      $path = $this->wire()->config->paths->root . "site/modules";
 
       $this->write("To add it as git submodule in a DDEV setup execute this command:");
       $this->question("git submodule add git@github.com:baumrock/RockMigrations.git site/modules/RockMigrations");
 
       $this->write("");
       $this->write("Alternatively you can download RockMigrations here: "
-        ."https://github.com/baumrock/RockMigrations/archive/refs/heads/main.zip");
+        . "https://github.com/baumrock/RockMigrations/archive/refs/heads/main.zip");
 
-      if($this->confirm("Did you download RockMigrations and want to install it?", true)) {
+      if ($this->confirm("Did you download RockMigrations and want to install it?", true)) {
         $this->write("Refreshing modules...");
         $this->wire()->modules->refresh();
         $this->write("Installing RockMigrations...");
@@ -93,9 +97,10 @@ class PwSetup extends Command {
    * Remove comments from config.php
    * @return void
    */
-  public function removeComments() {
-    $config = $this->app->rootPath()."site/config.php";
-    if(!is_file($config)) return $this->error("config.php not found");
+  public function removeComments()
+  {
+    $config = $this->app->rootPath() . "site/config.php";
+    if (!is_file($config)) return $this->error("config.php not found");
     $str = file_get_contents($config);
     $str = preg_replace("#\/\*\*\n([\S\s]*?)\*\/\n#m", "", $str);
     $str = preg_replace("#\n//(.*)\n#m", "", $str);
@@ -106,13 +111,13 @@ class PwSetup extends Command {
    * Remove salts from config.php
    * @return void
    */
-  public function removeSalts() {
-    $config = $this->app->rootPath()."site/config.php";
-    if(!is_file($config)) return $this->error("config.php not found");
+  public function removeSalts()
+  {
+    $config = $this->app->rootPath() . "site/config.php";
+    if (!is_file($config)) return $this->error("config.php not found");
     $str = file_get_contents($config);
     $str = preg_replace("/Installer: Table Salt([\S\s]*?);/m", "Table Salt moved to config-local.php\n */", $str);
     $str = preg_replace("/Installer: User Authentication Salt([\S\s]*?);/m", "User Salt moved to config-local.php\n */", $str);
     file_put_contents($config, $str);
   }
-
 }
