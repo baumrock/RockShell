@@ -1,3 +1,12 @@
+# [1.4.0](https://github.com/baumrock/RockShell/compare/v1.3.0...v1.4.0) (2023-04-16)
+
+
+### Features
+
+* add filesize on dump log ([9b193ef](https://github.com/baumrock/RockShell/commit/9b193ef782799447d6bfc98de5333f156753a493))
+
+
+
 # [1.3.0](https://github.com/baumrock/RockShell/compare/v1.2.0...v1.3.0) (2023-04-16)
 
 
