@@ -1,3 +1,12 @@
+# [1.3.0](https://github.com/baumrock/RockShell/compare/v1.2.0...v1.3.0) (2023-04-16)
+
+
+### Features
+
+* add PwUser and PwPass ([4d0c53a](https://github.com/baumrock/RockShell/commit/4d0c53af6aee75f628003b4dc22af58588dcc904))
+
+
+
 # [1.2.0](https://github.com/baumrock/RockShell/compare/v1.1.0...v1.2.0) (2023-04-08)
 
 
