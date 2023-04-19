@@ -51,7 +51,7 @@ class DbDump extends Command
     $file = $backup->backup(['filename' => $file]);
     if ($file) {
       $this->success("Backed up to: $file");
-      $size = wireBytesStr($file, true);
+      $size = wireBytesStr(filesize($file), true);
       $this->write("Filesize: $size");
       $this->write("");
     } else {
