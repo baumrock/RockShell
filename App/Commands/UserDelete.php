@@ -2,7 +2,6 @@
 
 namespace RockShell;
 
-use ProcessWire\WireRandom;
 use Symfony\Component\Console\Input\InputOption;
 
 class UserDelete extends Command
