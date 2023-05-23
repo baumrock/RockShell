@@ -1,3 +1,12 @@
+# [1.5.0](https://github.com/baumrock/RockShell/compare/v1.4.0...v1.5.0) (2023-05-23)
+
+
+### Features
+
+* add user rename commands ([6babc7e](https://github.com/baumrock/RockShell/commit/6babc7e5d17f249c0356404a14c8e34c562b3b57))
+
+
+
 # [1.4.0](https://github.com/baumrock/RockShell/compare/v1.3.0...v1.4.0) (2023-04-16)
 
 
