@@ -5,13 +5,13 @@ namespace RockShell;
 use ProcessWire\WireRandom;
 use Symfony\Component\Console\Input\InputOption;
 
-class PwPass extends Command
+class UserPass extends Command
 {
 
   public function config()
   {
     $this
-      ->setDescription("Reset passwort of a user")
+      ->setDescription("Reset password of a user")
       ->addOption("user", "u", InputOption::VALUE_OPTIONAL, "username");
   }
 
