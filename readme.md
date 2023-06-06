@@ -35,11 +35,11 @@ $config->rockshell = [
   'remotes' => [
     'staging' => [
       'ssh' => 'user@host.com',
-      'dir' => '/path/to/your/site',
+      'dir' => '/path/to/your/site/current',
     ],
     'production' => [
       'ssh' => 'user@host.com',
-      'dir' => '/path/to/your/site',
+      'dir' => '/path/to/your/site/current',
     ],
   ],
 ];
