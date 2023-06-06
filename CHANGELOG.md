@@ -1,3 +1,12 @@
+# [1.6.0](https://github.com/baumrock/RockShell/compare/v1.5.0...v1.6.0) (2023-06-06)
+
+
+### Features
+
+* add command user-delete ([161f661](https://github.com/baumrock/RockShell/commit/161f661d2014320418b3aafc3efa5091523bb4c9))
+
+
+
 # [1.5.0](https://github.com/baumrock/RockShell/compare/v1.4.0...v1.5.0) (2023-05-23)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * auto-select remote for db-pull ([0504f01](https://github.com/baumrock/RockShell/commit/0504f013620097ba2a0a30e741d60e4ee1b8fc7a))
-
-
-
-# [1.1.0](https://github.com/baumrock/RockShell/compare/7de3cfb05c6bf485428924df7dcd98528e91ddf4...v1.1.0) (2023-03-04)
-
-
-### Features
-
-* setup conventional commits ([7de3cfb](https://github.com/baumrock/RockShell/commit/7de3cfb05c6bf485428924df7dcd98528e91ddf4))
 
 
 
