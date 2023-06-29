@@ -26,6 +26,17 @@ cd /path/to/your/project/RockShell
 php rockshell
 ```
 
+You can either call the `rockshell` file directly as shown above or you can create a symlink that points to that file, so that you can call `php rockshell` directly from within the PW root folder:
+
+```sh
+cd /path/to/pw/RockShell
+php rockshell symlink
+
+# now that the symlink exists you can use short calls:
+cd /path/to/pw
+php rockshell ...
+```
+
 ### Setting up remotes
 
 ```php
