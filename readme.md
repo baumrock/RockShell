@@ -58,7 +58,13 @@ $config->rockshell = [
 
 ## Creating custom commands
 
+Creating commands is as easy as adding one single file with a PHP class with two methods to your project. You can place commands in `/site/assets/RockShell/Commands` or in `/site/modules/*/RockShell/Commands`. This command will be then available to your rockshell interface:
+
+<img src=https://i.imgur.com/pRc8B9t.gif>
+
 ## Creating custom base commands
+
+TBD
 
 ## Output
 
@@ -74,4 +80,4 @@ class HelloWorld extends Command {
 }
 ```
 
-See the symfony docs about coloring here: https://symfony.com/doc/current/console/coloring.html
+Check out the `php rockshell ping` command and see the symfony docs about coloring here: https://symfony.com/doc/current/console/coloring.html
