@@ -76,8 +76,10 @@ class Application extends ConsoleApplication
   /**
    * Find all command files in the current project
    *
-   * This will look for commands in /RockShell/Commands/[folder]/MyCommand.php
-   * where [folder] is optional!
+   * This will look for commands in
+   * /RockShell/App/Commands/
+   * /site/modules/RockShell/Commands
+   * /site/assets/RockShell/Commands
    *
    * It will also take care of loading the base command from /RockShell/Command.php
    *
@@ -88,6 +90,7 @@ class Application extends ConsoleApplication
     $roots = [
       $this->root . "RockShell/App/",
       $this->root . "site/modules",
+      $this->root . "site/assets",
     ];
     $files = array();
     foreach ($roots as $root) {
@@ -104,6 +107,8 @@ class Application extends ConsoleApplication
         // skip some files and folders
         if (strpos($info->getFilename(), ".") === 0) continue;
         if (strpos($filename, "/vendor/")) continue;
+        if (strpos($filename, "/lib/")) continue;
+        if (strpos($filename, "/tracy-")) continue;
         if (!strpos($filename, "/RockShell/")) continue;
 
         // if we find a new base command file we load it now
