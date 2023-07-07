@@ -152,16 +152,16 @@ class Command extends ConsoleCommand
   }
 
   /**
-   * Convert string to hyphencase
+   * Convert string to colonCase
    * Converts FooBar to foo-bar
    * Taken from PW Sanitizer
    * @return string
    */
-  public static function hyphenCase($value, array $options = array())
+  public static function colonCase($value, array $options = array())
   {
 
     $defaults = array(
-      'hyphen' => '-',
+      'hyphen' => ':',
       'allow' => 'a-z0-9',
       'allowUnderscore' => false,
     );
@@ -302,7 +302,7 @@ class Command extends ConsoleCommand
    */
   public function shortName()
   {
-    return $this->hyphenCase($this->reflect->getShortName());
+    return $this->colonCase($this->reflect->getShortName());
   }
 
   /**
