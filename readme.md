@@ -6,15 +6,11 @@ See https://symfony.com/doc/current/components/console.html and https://laravel.
 
 <img width="719" alt="image" src="https://github.com/baumrock/RockShell/assets/8488586/3858509e-5522-476c-acd0-dd31545a7c4f">
 
-## Kickstart a PW Project
+## Installation / Setup
 
-```sh
-cd /path/to/your/project
-git init
-git submodule add git@github.com:baumrock/RockShell.git
-cd RockShell
-php rockshell pw-install
-```
+Just copy all files of this repo into /path/to/pw/RockShell
+
+Do NOT install the module via the PW Backend!
 
 ## How to use RockShell
 
@@ -36,7 +32,7 @@ php rockshell symlink
 
 # now that the symlink exists you can use short calls:
 cd /path/to/pw
-php rockshell ...
+php rock ...
 ```
 
 ### Setting up remotes
