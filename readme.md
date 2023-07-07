@@ -4,6 +4,8 @@ RockShell is a wrapper around the `symfony/console` component and inspired by La
 
 See https://symfony.com/doc/current/components/console.html and https://laravel.com/docs/8.x/artisan
 
+<img width="719" alt="image" src="https://github.com/baumrock/RockShell/assets/8488586/3858509e-5522-476c-acd0-dd31545a7c4f">
+
 ## Kickstart a PW Project
 
 ```sh
