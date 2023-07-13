@@ -1,14 +1,25 @@
-# RockShell
+# RockShell: The Command-Line Companion for ProcessWire
 
-RockShell is a wrapper around the `symfony/console` component and inspired by Laravel's `Artisan Console`.
+RockShell is a powerful command-line tool that makes it easy to install, configure, and manage ProcessWire websites. 
 
-See https://symfony.com/doc/current/components/console.html and https://laravel.com/docs/8.x/artisan
+With RockShell, you can:
+
+* Install ProcessWire with a single command
+* Create a backup of your database with a single command
+* Restore your database from a backup with a single command
+* Define customs commands
+
+It is based on the [symfony/console]( https://symfony.com/doc/current/components/console.html) component and inspired by Laravel's [Artisan Console](https://laravel.com/docs/10.x/artisan).
 
 <img width="719" alt="image" src="https://github.com/baumrock/RockShell/assets/8488586/3858509e-5522-476c-acd0-dd31545a7c4f">
 
 ## Installation / Setup
 
-Just copy all files of this repo into /path/to/pw/RockShell
+Clone this repo into `/path/to/yourproject/`
+
+with `git clone https://github.com/baumrock/RockShell`
+
+Or you could just download all files and copy them into /path/to/yourproject/RockShell
 
 Do NOT install the module via the PW Backend!
 
@@ -18,8 +29,9 @@ Simply execute the rockshell file from your command line via your PHP interprete
 
 ```sh
 php /path/to/your/project/RockShell/rock
-
-# or
+```
+or
+```sh
 cd /path/to/your/project/RockShell
 php rock
 ```
