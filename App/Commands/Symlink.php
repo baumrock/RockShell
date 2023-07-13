@@ -18,7 +18,7 @@ class Symlink extends Command
   public function handle()
   {
     $root = realpath(__DIR__ . "/../../../");
-    $this->exec("cd $root && ln -snf RockShell/rockshell rock", false);
+    $this->exec("cd $root && ln -snf RockShell/rock rock", false);
     if (is_file($root . "/rock")) {
       $this->success("Symlink 'rock' created at $root");
       $this->comment("You can now use 'php rock' to execute RockShell");

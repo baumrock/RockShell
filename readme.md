@@ -17,18 +17,18 @@ Do NOT install the module via the PW Backend!
 Simply execute the rockshell file from your command line via your PHP interpreter:
 
 ```sh
-php /path/to/your/project/RockShell/rockshell
+php /path/to/your/project/RockShell/rock
 
 # or
 cd /path/to/your/project/RockShell
-php rockshell
+php rock
 ```
 
-You can either call the `rockshell` file directly as shown above or you can create a symlink that points to that file, so that you can call `php rockshell` directly from within the PW root folder:
+You can either call the `rock` file directly as shown above or you can create a symlink that points to that file, so that you can call `php rock` directly from within the PW root folder:
 
 ```sh
 cd /path/to/pw/RockShell
-php rockshell symlink
+php rock symlink
 
 # now that the symlink exists you can use short calls:
 cd /path/to/pw
@@ -78,4 +78,4 @@ class HelloWorld extends Command {
 }
 ```
 
-Check out the `php rockshell ping` command and see the symfony docs about coloring here: https://symfony.com/doc/current/console/coloring.html
+Check out the `php rock ping` command and see the symfony docs about coloring here: https://symfony.com/doc/current/console/coloring.html
