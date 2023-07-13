@@ -38,10 +38,10 @@ class PwDownload extends Command {
     // $this->exec("rm -rf processwire-$version");
     $this->write("Cleaning up temporary files...");
     $this->exec("rm $version.zip");
-    $this->exec("mv processwire-$version pwtmp
-      mv pwtmp/* .
-      mv pwtmp/.* .");
-
+    $this->exec("mv processwire-$version pwtmp");
+    $this->exec('mv pwtmp/* ./');
+    $this->exec('mv pwtmp/.* ./');
+    
     sleep(1);
     $this->exec("rm -rf pwtmp");
 
