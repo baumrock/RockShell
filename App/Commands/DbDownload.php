@@ -16,7 +16,7 @@ use Symfony\Component\Console\Input\InputOption;
  * ];
  */
 
-class DbPull extends Command
+class DbDownload extends Command
 {
 
   const backupdir = "/site/assets/backups/database/";
@@ -24,10 +24,9 @@ class DbPull extends Command
   public function config()
   {
     $this
-      ->setDescription("Pull a database dump from remote server")
+      ->setDescription("Download a database dump from remote server")
       ->addArgument("remote",         InputArgument::OPTIONAL)
       ->addOption("list",       "l",  InputOption::VALUE_NONE,      "List remotes")
-      ->addOption("keep",       "k",  InputOption::VALUE_NONE,      "Keep tmp.sql after restore")
       ->addOption("php",        "p",  InputOption::VALUE_OPTIONAL,  "PHP command to use, eg keyhelp-php81");
   }
 
@@ -62,29 +61,19 @@ class DbPull extends Command
     $dir = rtrim($remote->dir, "/");
     $folder = trim(DbDump::backupdir, "/");
 
-    $this->write("Creating remote dump...");
+    $this->write("Creating remote dump ...");
     $php = $this->option('php') ?: $this->getConfig('remotePHP') ?: 'php';
     $this->sshExec($ssh, "cd $dir
       $php RockShell/rock db:dump -f tmp.sql", true);
 
-    $this->write("Copying dump to local...");
+    $this->write("Copying dump to local ...");
     $this->exec("scp $ssh:$dir/$folder/tmp.sql {$wire->config->paths->root}/$folder/tmp.sql");
 
-    $this->write("Removing remote dump...");
+    $this->write("Removing remote dump ...");
     $this->sshExec($ssh, "cd $dir && rm -rf $dir/$folder/tmp.sql");
 
-    $this->call("db:restore", [
-      '--y' => true,
-      '--file' => 'tmp.sql',
-    ]);
+    $this->write("Download complete!\n");
 
-    if (!$this->option('keep')) {
-      $this->write("Removing tmp.sql...");
-      $this->exec("rm $folder/tmp.sql", false);
-      $this->info("Done");
-    }
-
-    $this->write("");
     return self::SUCCESS;
   }
 }

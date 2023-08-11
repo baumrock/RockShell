@@ -220,7 +220,7 @@ class PwInstall extends Command
         . "##### INSTALL SUCCESSFUL ######\n"
         . "### powered by baumrock.com ###");
       $this->warn("Login: $url");
-      $this->alert("You can now call php rockshell pw-setup");
+      $this->alert("You can now call php rock pw:setup");
       die();
     }
   }
@@ -391,7 +391,7 @@ class PwInstall extends Command
           ? 'dev'
           : $this->choice("Which version?", $versions, "dev");
 
-        $this->call("pw-download", ['version' => $version]);
+        $this->call("pw:download", ['version' => $version]);
         sleep(1);
 
         return $this->nextStep(true);
