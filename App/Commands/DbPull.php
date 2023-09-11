@@ -64,8 +64,11 @@ class DbPull extends Command
 
     $this->write("Creating remote dump...");
     $php = $this->option('php') ?: $this->getConfig('remotePHP') ?: 'php';
-    $this->sshExec($ssh, "cd $dir
-      $php RockShell/rock db:dump -f tmp.sql", true);
+    $cmd = "$php RockShell/rock db:dump -f tmp.sql";
+
+    $this->write("  Remote path: $dir");
+    $this->write("  Remote command: $cmd");
+    $this->sshExec($ssh, "cd $dir && $cmd");
 
     $this->write("Copying dump to local...");
     $this->exec("scp $ssh:$dir/$folder/tmp.sql {$wire->config->paths->root}/$folder/tmp.sql");
@@ -82,6 +85,9 @@ class DbPull extends Command
       $this->write("Removing tmp.sql...");
       $this->exec("rm $folder/tmp.sql", false);
       $this->info("Done");
+    } else {
+      $this->write("Saved dump to tmp.sql");
+      $this->info("You can use \"db:restore -f tmp.sql\" to restore again");
     }
 
     $this->write("");

@@ -51,7 +51,11 @@ class DbDump extends Command
     $file = $backup->backup(['filename' => $file]);
     if ($file) {
       clearstatcache(); // fixes wrong filesize
-      $this->success("Backed up to: $file");
+
+      $root = $wire->config->paths->root;
+      $relative = str_replace($root, "", $file);
+      $this->write("Root path: $root");
+      $this->success("File path: $relative");
       $size = wireBytesStr((int)filesize($file), true);
       $this->write("Filesize: $size");
       $this->write("");
