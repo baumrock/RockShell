@@ -309,9 +309,10 @@ class Command extends ConsoleCommand
    * Execute command on remote via ssh
    * @return void
    */
-  public function sshExec($ssh, $cmd)
+  public function sshExec($ssh, $cmd, $echo = false)
   {
     $cmd = str_replace("\n", " && ", $cmd);
+    if ($echo) $this->write($cmd);
     $this->exec("ssh $ssh \"$cmd\"");
   }
 
