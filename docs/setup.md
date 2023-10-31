@@ -43,15 +43,17 @@ php rock ...
 When using DDEV for local development you need to execute RockShell from within your container:
 
 ```sh
-ddev exec php rock ...
+ddev exec php RockShell/rock ...
 ```
 
 I'm lazy and I use RockShell all the time so I created this alias:
 
 ```sh
 function rockshell() {
-  ddev exec php rock "$@"
+  ddev exec php RockShell/rock "$@"
 }
 ```
 
-Now I can simply type `rockshell ...` directly on my host machine and it will execute RockShell within the container 😎🚀
+Now I can simply type `rockshell ...` or commands like `rockshell db:pull staging` directly on my host machine and it will execute RockShell within the container 😎🚀
+
+<img src=alias.png class=blur>
