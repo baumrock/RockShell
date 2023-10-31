@@ -4,6 +4,8 @@ Creating commands is as easy as adding one simple file to your project. You can 
 
 <img src=https://i.imgur.com/pRc8B9t.gif class=blur>
 
+An example command can be found in RockMigrations: https://github.com/baumrock/RockMigrations/blob/main/RockShell/Commands/RmDemo.php
+
 ## Output
 
 The output interface is available in your command's `output` property. See https://symfony.com/doc/current/console.html#console-output for details. RockShell provides some shortcuts that are easier to use:
