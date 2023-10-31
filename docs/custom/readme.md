@@ -1,10 +1,12 @@
 # Custom Commands
 
-Creating commands is as easy as adding one simple file to your project. You can place commands in `/site/assets/RockShell/Commands` or any of your modules `/site/modules/*/RockShell/Commands`. This command will then be available to your rockshell interface:
+Creating commands is as easy as adding one simple file to your project. You can place commands in `/site/assets/RockShell/Commands` or any of your modules `/site/modules/*/RockShell/Commands`.
 
-<img src=https://i.imgur.com/pRc8B9t.gif class=blur>
+Note that if you place it in one of your modules you need to adjust the namespace of your command to match your modules folder name. An example command can be found in RockMigrations: https://github.com/baumrock/RockMigrations/blob/main/RockShell/Commands/RmDemo.php
 
-An example command can be found in RockMigrations: https://github.com/baumrock/RockMigrations/blob/main/RockShell/Commands/RmDemo.php
+The command uses the `RockMigrations` namespace to make sure we don't get any naming collisions.
+
+<img src=cmd.png class=blur>
 
 ## Output
 
