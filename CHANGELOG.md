@@ -1,3 +1,12 @@
+## [2.1.1](https://github.com/baumrock/RockShell/compare/v2.1.0...v2.1.1) (2023-11-02)
+
+
+### Bug Fixes
+
+* use choice for site profile instead of completion ([3b6ebd2](https://github.com/baumrock/RockShell/commit/3b6ebd22935f16c5ee1b0f98b335bef9f4927dcb))
+
+
+
 # [2.1.0](https://github.com/baumrock/RockShell/compare/v2.0.0...v2.1.0) (2023-08-11)
 
 
@@ -53,15 +62,6 @@
 ### Features
 
 * add user rename commands ([6babc7e](https://github.com/baumrock/RockShell/commit/6babc7e5d17f249c0356404a14c8e34c562b3b57))
-
-
-
-# [1.4.0](https://github.com/baumrock/RockShell/compare/v1.3.0...v1.4.0) (2023-04-16)
-
-
-### Features
-
-* add filesize on dump log ([9b193ef](https://github.com/baumrock/RockShell/commit/9b193ef782799447d6bfc98de5333f156753a493))
 
 
 
