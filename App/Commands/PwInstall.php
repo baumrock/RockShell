@@ -109,7 +109,7 @@ class PwInstall extends Command
     }
     $profiles = array_values(array_filter($profiles));
     if (!$profile = $this->option('profile')) {
-      $profile = $this->askWithCompletion(
+      $profile = $this->choice(
         "Select profile to install",
         $profiles,
         $profiles[0]

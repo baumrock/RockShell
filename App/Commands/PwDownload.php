@@ -39,8 +39,7 @@ class PwDownload extends Command {
     $this->write("Cleaning up temporary files...");
     $this->exec("rm $version.zip");
     $this->exec("mv processwire-$version pwtmp");
-    $this->exec('mv pwtmp/* ./');
-    $this->exec('mv pwtmp/.* ./');
+    $this->exec('find pwtmp -mindepth 1 -maxdepth 1 -exec mv -t ./ {} +');
     
     sleep(1);
     $this->exec("rm -rf pwtmp");
