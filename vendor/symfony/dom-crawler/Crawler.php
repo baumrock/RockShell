@@ -623,7 +623,7 @@ class Crawler implements \Countable, \IteratorAggregate
         $text = $this->getNode(0)->nodeValue;
 
         if ($normalizeWhitespace) {
-            return trim(preg_replace('/(?:\s{2,}+|[^\S ])/', ' ', $text));
+            return trim(preg_replace("/(?:[ \n\r\t\x0C]{2,}+|[\n\r\t\x0C])/", ' ', $text), " \n\r\t\x0C");
         }
 
         return $text;
@@ -778,7 +778,7 @@ class Crawler implements \Countable, \IteratorAggregate
      *
      * @return static
      *
-     * @throws \RuntimeException if the CssSelector Component is not available
+     * @throws \LogicException if the CssSelector Component is not available
      */
     public function filter(string $selector)
     {
@@ -1186,11 +1186,11 @@ class Crawler implements \Countable, \IteratorAggregate
         set_error_handler(function () { throw new \Exception(); });
 
         try {
-            return mb_encode_numericentity($htmlContent, [0x80, 0xFFFF, 0, 0xFFFF], $charset);
+            return mb_encode_numericentity($htmlContent, [0x80, 0x10FFFF, 0, 0x1FFFFF], $charset);
         } catch (\Exception|\ValueError $e) {
             try {
                 $htmlContent = iconv($charset, 'UTF-8', $htmlContent);
-                $htmlContent = mb_encode_numericentity($htmlContent, [0x80, 0xFFFF, 0, 0xFFFF], 'UTF-8');
+                $htmlContent = mb_encode_numericentity($htmlContent, [0x80, 0x10FFFF, 0, 0x1FFFFF], 'UTF-8');
             } catch (\Exception|\ValueError $e) {
             }
 
