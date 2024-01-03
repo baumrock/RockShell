@@ -245,7 +245,7 @@ abstract class AbstractString implements \Stringable, \JsonSerializable
     public function collapseWhitespace(): self
     {
         $str = clone $this;
-        $str->string = trim(preg_replace('/(?:\s{2,}+|[^\S ])/', ' ', $str->string));
+        $str->string = trim(preg_replace("/(?:[ \n\r\t\x0C]{2,}+|[\n\r\t\x0C])/", ' ', $str->string), " \n\r\t\x0C");
 
         return $str;
     }
@@ -577,8 +577,11 @@ abstract class AbstractString implements \Stringable, \JsonSerializable
         try {
             try {
                 $b->string = mb_convert_encoding($this->string, $toEncoding, 'UTF-8');
-            } catch (InvalidArgumentException $e) {
+            } catch (InvalidArgumentException|\ValueError $e) {
                 if (!\function_exists('iconv')) {
+                    if ($e instanceof \ValueError) {
+                        throw new InvalidArgumentException($e->getMessage(), $e->getCode(), $e);
+                    }
                     throw $e;
                 }
 
