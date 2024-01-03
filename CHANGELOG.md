@@ -1,3 +1,12 @@
+# [2.2.0](https://github.com/baumrock/RockShell/compare/v2.1.1...v2.2.0) (2024-01-03)
+
+
+### Features
+
+* upgrade dependencies to support PHP8.2 ([ab50736](https://github.com/baumrock/RockShell/commit/ab507365a2cf3aa365b86b8e1c61b43112166bd0))
+
+
+
 ## [2.1.1](https://github.com/baumrock/RockShell/compare/v2.1.0...v2.1.1) (2023-11-02)
 
 
@@ -53,15 +62,6 @@
 ### Features
 
 * add command user-delete ([161f661](https://github.com/baumrock/RockShell/commit/161f661d2014320418b3aafc3efa5091523bb4c9))
-
-
-
-# [1.5.0](https://github.com/baumrock/RockShell/compare/v1.4.0...v1.5.0) (2023-05-23)
-
-
-### Features
-
-* add user rename commands ([6babc7e](https://github.com/baumrock/RockShell/commit/6babc7e5d17f249c0356404a14c8e34c562b3b57))
 
 
 
