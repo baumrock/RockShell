@@ -95,6 +95,7 @@ class Command extends ConsoleCommand
   {
     $this->input = $input;
     $this->output = $output;
+    $this->sudo(true);
     return $this->handle();
   }
 
@@ -368,6 +369,22 @@ class Command extends ConsoleCommand
   public function success($str)
   {
     $this->info($this->str($str));
+  }
+
+  /**
+   * Change to the first superuser
+   * @return void
+   */
+  public function sudo($silent = false): void
+  {
+    if (!$this->wire()) return;
+    $role = $this->wire()->roles->get('superuser');
+    $su = $this->wire()->users->get("sort=id,roles=$role");
+    if (!$su->id and !$silent) {
+      $this->log("No superuser found");
+      return;
+    }
+    $this->wire()->users->setCurrentUser($su);
   }
 
   /**
