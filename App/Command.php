@@ -43,6 +43,20 @@ class Command extends ConsoleCommand
   }
 
   /**
+   * Print backtrace (for debugging)
+   * @return void
+   */
+  public function backtrace()
+  {
+    $trace = debug_backtrace();
+    echo "--- backtrace ---\n";
+    foreach ($trace as $item) {
+      echo "  " . $item['file'] . ":" . $item['line'] . "\n";
+    }
+    echo "------------------\n";
+  }
+
+  /**
    * Check if a .ddev folder exists in pw root
    * @return bool
    */
