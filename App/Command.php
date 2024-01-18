@@ -399,14 +399,23 @@ class Command extends ConsoleCommand
 
   /**
    * Get wire instance
-   * @return ProcessWire
+   * @return ProcessWire|false
    */
   public function wire()
   {
     if ($this->wire) return $this->wire;
     chdir($this->app->rootPath());
-    include 'index.php';
-    return $this->wire = $wire;
+
+    // pw is not yet there, eg when using pw:install
+    if (!is_file("index.php")) return false;
+
+    try {
+      include 'index.php';
+      return $this->wire = $wire;
+    } catch (\Throwable $th) {
+      echo $th->getMessage() . "\n";
+      return false;
+    }
   }
 
   /**
