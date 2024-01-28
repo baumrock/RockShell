@@ -423,6 +423,12 @@ class Command extends ConsoleCommand
     // pw is not yet there, eg when using pw:install
     if (!is_file("index.php")) return false;
 
+    // pw is here but not installed
+    if (is_file("install.php")) {
+      $this->alert("ProcessWire exists but is not installed");
+      return false;
+    }
+
     try {
       include 'index.php';
       return $this->wire = $wire;

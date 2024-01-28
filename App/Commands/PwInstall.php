@@ -45,6 +45,12 @@ class PwInstall extends Command
       $this->error("Use ddev ssh to execute this command from within DDEV");
       return self::FAILURE;
     }
+
+    if ($this->wire()) {
+      $this->alert("ProcessWire is already installed!");
+      return self::SUCCESS;
+    }
+
     $this->browser = new HttpBrowser(HttpClient::create());
     $this->nextStep(true);
     return self::SUCCESS;
@@ -218,9 +224,9 @@ class PwInstall extends Command
     } else {
       $this->success("\n"
         . "##### INSTALL SUCCESSFUL ######\n"
-        . "### powered by baumrock.com ###");
+        . "### powered by baumrock.com ###\n");
       $this->warn("Login: $url");
-      $this->alert("You can now call php rock pw:setup");
+      $this->alert("You can now call rockshell pw:setup");
       die();
     }
   }
@@ -419,10 +425,13 @@ class PwInstall extends Command
 
   public function host($site)
   {
+    $defaulthost = getenv('DDEV_PROJECT')
+      ? getenv('DDEV_PROJECT') . ".ddev.site"
+      : "example.com";
     $site = ltrim($site, "/");
     $checkHTTP = !$this->host;
     $host = $this->host ?: $this->option('host')
-      ?: $this->ask('Enter host, eg example.ddev.site');
+      ?: $this->ask('Enter host', $defaulthost);
     $this->host = $host;
 
     // check if host is reachable via HTTP
