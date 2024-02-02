@@ -28,6 +28,6 @@ $config->tracy = [
   'outputMode' => 'development',
   'guestForceDevelopmentLocal' => true,
   'forceIsLocal' => true,
-  'localRootPath' => '/local/path/to/project/',
+  'localRootPath' => getenv("DDEV_APPROOT"),
   'numLogEntries' => 100, // for RockMigrations
 ];
