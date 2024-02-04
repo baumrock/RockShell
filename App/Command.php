@@ -43,6 +43,20 @@ class Command extends ConsoleCommand
   }
 
   /**
+   * Print backtrace (for debugging)
+   * @return void
+   */
+  public function backtrace()
+  {
+    $trace = debug_backtrace();
+    echo "--- backtrace ---\n";
+    foreach ($trace as $item) {
+      echo "  " . $item['file'] . ":" . $item['line'] . "\n";
+    }
+    echo "------------------\n";
+  }
+
+  /**
    * Check if a .ddev folder exists in pw root
    * @return bool
    */
@@ -95,6 +109,7 @@ class Command extends ConsoleCommand
   {
     $this->input = $input;
     $this->output = $output;
+    $this->sudo(true);
     return $this->handle();
   }
 
@@ -371,6 +386,22 @@ class Command extends ConsoleCommand
   }
 
   /**
+   * Change to the first superuser
+   * @return void
+   */
+  public function sudo($silent = false): void
+  {
+    if (!$this->wire()) return;
+    $role = $this->wire()->roles->get('superuser');
+    $su = $this->wire()->users->get("sort=id,roles=$role");
+    if (!$su->id and !$silent) {
+      $this->log("No superuser found");
+      return;
+    }
+    $this->wire()->users->setCurrentUser($su);
+  }
+
+  /**
    * Enforce trailing slash and normalize separators
    * @param string $path
    * @return string
@@ -382,14 +413,29 @@ class Command extends ConsoleCommand
 
   /**
    * Get wire instance
-   * @return ProcessWire
+   * @return ProcessWire|false
    */
   public function wire()
   {
     if ($this->wire) return $this->wire;
     chdir($this->app->rootPath());
-    include 'index.php';
-    return $this->wire = $wire;
+
+    // pw is not yet there, eg when using pw:install
+    if (!is_file("index.php")) return false;
+
+    // pw is here but not installed
+    if (is_file("install.php")) {
+      $this->alert("ProcessWire exists but is not installed");
+      return false;
+    }
+
+    try {
+      include 'index.php';
+      return $this->wire = $wire;
+    } catch (\Throwable $th) {
+      echo $th->getMessage() . "\n";
+      return false;
+    }
   }
 
   /**

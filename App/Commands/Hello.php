@@ -2,6 +2,10 @@
 
 namespace RockShell;
 
+/**
+ * Simple example of a RockShell command
+ * See also Ping.php
+ */
 class Hello extends Command
 {
 

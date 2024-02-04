@@ -1,11 +1,21 @@
-<?php namespace RockShell;
-class Ping extends Command {
+<?php
 
-  public function config() {
+namespace RockShell;
+
+/**
+ * Demonstrates different output styles
+ * See also Hello.php
+ */
+class Ping extends Command
+{
+
+  public function config()
+  {
     $this->setDescription("Outputs 'pong' in different styles");
   }
 
-  public function handle() {
+  public function handle()
+  {
     $this->output->writeln("pong: writeln()");
     $this->write("pong: write()"); // shortcut of above
     $this->info("pong: info()");
@@ -14,5 +24,4 @@ class Ping extends Command {
     $this->question("pong: question()");
     return self::SUCCESS;
   }
-
 }
