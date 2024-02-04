@@ -1,3 +1,22 @@
+# [2.3.0](https://github.com/baumrock/RockShell/compare/v2.2.0...v2.3.0) (2024-02-04)
+
+
+### Bug Fixes
+
+* install command broken ([343b795](https://github.com/baumrock/RockShell/commit/343b7959366123c6832d6f73a4a54390932b7b3e))
+
+
+### Features
+
+* add backtrace() for cli debugging ([5c23d24](https://github.com/baumrock/RockShell/commit/5c23d24d9838c60480c4a60a808f609e4840e413))
+* add files:cleanup ([a242249](https://github.com/baumrock/RockShell/commit/a242249646bbf99860c77a85f43fa30b3f393e4b))
+* add user:reset command ([6e34d96](https://github.com/baumrock/RockShell/commit/6e34d960373e25a80bb6ba772f5022828dc10e7d))
+* improve install command ([4e6f164](https://github.com/baumrock/RockShell/commit/4e6f1646cbc1301e3d17b8b9a417adc63ee3ff48))
+* make commands run as sudo ([02df9ae](https://github.com/baumrock/RockShell/commit/02df9aebec41218b7a4cabfa5139a82cba6f63b7))
+* use ddev_approot for localRootPath ([17a372a](https://github.com/baumrock/RockShell/commit/17a372add3b2baf55339327b1c4ed001decd8e5f))
+
+
+
 # [2.2.0](https://github.com/baumrock/RockShell/compare/v2.1.1...v2.2.0) (2024-01-03)
 
 
@@ -53,15 +72,6 @@
 ### BREAKING CHANGES
 
 * change command syntax from hyphen to colon
-
-
-
-# [1.6.0](https://github.com/baumrock/RockShell/compare/v1.5.0...v1.6.0) (2023-06-06)
-
-
-### Features
-
-* add command user-delete ([161f661](https://github.com/baumrock/RockShell/commit/161f661d2014320418b3aafc3efa5091523bb4c9))
 
 
 
