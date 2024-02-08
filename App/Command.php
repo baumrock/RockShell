@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Console\Command as ConsoleCommand;
 use LogicException;
 use ProcessWire\ProcessWire;
+use ProcessWire\User;
 use ReflectionClass;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -386,18 +387,19 @@ class Command extends ConsoleCommand
   }
 
   /**
-   * Change to the first superuser
+   * Make RockShell run as superuser
    * @return void
    */
-  public function sudo($silent = false): void
+  public function sudo(): void
   {
     if (!$this->wire()) return;
-    $role = $this->wire()->roles->get('superuser');
-    $su = $this->wire()->users->get("sort=id,roles=$role");
-    if (!$su->id and !$silent) {
-      $this->log("No superuser found");
-      return;
-    }
+    // this will create a new superuser at runtime
+    // this ensures that we can run rockshell without superusers on the system
+    // it also ensures that the user has the default language set which is
+    // important to avoid hard to find bugs where scripts set values
+    // in non-default languages
+    $su = new User();
+    $su->addRole("superuser");
     $this->wire()->users->setCurrentUser($su);
   }
 
