@@ -110,7 +110,7 @@ class Command extends ConsoleCommand
   {
     $this->input = $input;
     $this->output = $output;
-    $this->sudo(true);
+    $this->sudo();
     return $this->handle();
   }
 
