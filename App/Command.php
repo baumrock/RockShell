@@ -58,6 +58,57 @@ class Command extends ConsoleCommand
   }
 
   /**
+   * Convert string to colonCase
+   * Converts FooBar to foo-bar
+   * Taken from PW Sanitizer
+   * @return string
+   */
+  public static function colonCase($value, array $options = array())
+  {
+
+    $defaults = array(
+      'hyphen' => ':',
+      'allow' => 'a-z0-9',
+      'allowUnderscore' => false,
+    );
+
+    $options = array_merge($defaults, $options);
+    $value = (string)$value;
+    $hyphen = $options['hyphen'];
+
+    // if value is empty then exit now
+    if (!strlen($value)) return '';
+
+    if ($options['allowUnderscore']) $options['allow'] .= '_';
+
+    // check if value is already in the right format, and return it if so
+    if (strtolower($value) === $value) {
+      if ($options['allow'] === $defaults['allow']) {
+        if (ctype_alnum(str_replace($hyphen, '', $value))) return $value;
+      } else {
+        if (preg_match('/^[' . $hyphen . $options['allow'] . ']+$/', $value)) return $value;
+      }
+    }
+
+    // don’t allow apostrophes to be separators
+    $value = str_replace(array("'", "’"), '', $value);
+    // some initial whitespace conversions to reduce workload on preg_replace
+    $value = str_replace(array(" ", "\r", "\n", "\t"), $hyphen, $value);
+    // convert everything not allowed to hyphens
+    $value = preg_replace('/[^' . $options['allow'] . ']+/i', $hyphen, $value);
+    // convert camel case to hyphenated
+    $value = preg_replace('/([[:lower:]])([[:upper:]])/', '$1' . $hyphen . '$2', $value);
+    // prevent doubled hyphens
+    $value = preg_replace('/' . $hyphen . $hyphen . '+/', $hyphen, $value);
+
+    if ($options['allowUnderscore']) {
+      $value = str_replace(array('-_', '_-'), '_', $value);
+    }
+
+    return strtolower(trim($value, $hyphen));
+  }
+
+  /**
    * Check if a .ddev folder exists in pw root
    * @return bool
    */
@@ -167,55 +218,9 @@ class Command extends ConsoleCommand
     echo $this->browser->getInternalResponse()->getContent();
   }
 
-  /**
-   * Convert string to colonCase
-   * Converts FooBar to foo-bar
-   * Taken from PW Sanitizer
-   * @return string
-   */
-  public static function colonCase($value, array $options = array())
+  public function isCLI(): bool
   {
-
-    $defaults = array(
-      'hyphen' => ':',
-      'allow' => 'a-z0-9',
-      'allowUnderscore' => false,
-    );
-
-    $options = array_merge($defaults, $options);
-    $value = (string)$value;
-    $hyphen = $options['hyphen'];
-
-    // if value is empty then exit now
-    if (!strlen($value)) return '';
-
-    if ($options['allowUnderscore']) $options['allow'] .= '_';
-
-    // check if value is already in the right format, and return it if so
-    if (strtolower($value) === $value) {
-      if ($options['allow'] === $defaults['allow']) {
-        if (ctype_alnum(str_replace($hyphen, '', $value))) return $value;
-      } else {
-        if (preg_match('/^[' . $hyphen . $options['allow'] . ']+$/', $value)) return $value;
-      }
-    }
-
-    // don’t allow apostrophes to be separators
-    $value = str_replace(array("'", "’"), '', $value);
-    // some initial whitespace conversions to reduce workload on preg_replace
-    $value = str_replace(array(" ", "\r", "\n", "\t"), $hyphen, $value);
-    // convert everything not allowed to hyphens
-    $value = preg_replace('/[^' . $options['allow'] . ']+/i', $hyphen, $value);
-    // convert camel case to hyphenated
-    $value = preg_replace('/([[:lower:]])([[:upper:]])/', '$1' . $hyphen . '$2', $value);
-    // prevent doubled hyphens
-    $value = preg_replace('/' . $hyphen . $hyphen . '+/', $hyphen, $value);
-
-    if ($options['allowUnderscore']) {
-      $value = str_replace(array('-_', '_-'), '_', $value);
-    }
-
-    return strtolower(trim($value, $hyphen));
+    return php_sapi_name() === 'cli';
   }
 
   /**
