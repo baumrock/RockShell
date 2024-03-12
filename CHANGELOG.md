@@ -1,3 +1,14 @@
+# [2.4.0](https://github.com/baumrock/RockShell/compare/v2.3.0...v2.4.0) (2024-03-12)
+
+
+### Features
+
+* add isCLI() helper ([5f637e5](https://github.com/baumrock/RockShell/commit/5f637e53572a2f672c85c440bd609bcbd397b608))
+* improve how RockShell runs as superuser ([85bea3c](https://github.com/baumrock/RockShell/commit/85bea3c252f4160bfb23ef4376d77c6459a5441f))
+* move rockshell init in a dedicated file to support rockmigrations rockshell api ([cca1fcb](https://github.com/baumrock/RockShell/commit/cca1fcbbab116dbbed99ad9c7282651b0268e0a5))
+
+
+
 # [2.3.0](https://github.com/baumrock/RockShell/compare/v2.2.0...v2.3.0) (2024-02-04)
 
 
@@ -49,29 +60,6 @@
 
 * add DbDownload command ([2e91be7](https://github.com/baumrock/RockShell/commit/2e91be726a335b70f720a63b8859a57350d2a6f3))
 * add warning if PHP version is too low ([a8caca8](https://github.com/baumrock/RockShell/commit/a8caca85695cd46899c0ee9fd2f516ce14b7351d))
-
-
-
-# [2.0.0](https://github.com/baumrock/RockShell/compare/v1.6.0...v2.0.0) (2023-07-07)
-
-
-### Bug Fixes
-
-* rename rockshell symlink ([9081b12](https://github.com/baumrock/RockShell/commit/9081b12b2bf9495f5c48e1664786429d87c24c7e))
-* wrong filesize in dbdump ([19aa16e](https://github.com/baumrock/RockShell/commit/19aa16e6098ed7e74c6f348b98cb343351dd1699))
-
-
-### Features
-
-* add hello world command ([092ed74](https://github.com/baumrock/RockShell/commit/092ed74184e645cc81de7b17f1375c6add27eca2))
-* add Symlink command ([c664ec6](https://github.com/baumrock/RockShell/commit/c664ec69b3eb32d1184a85dc0349f538622d3904))
-* improve loading of commands ([752d342](https://github.com/baumrock/RockShell/commit/752d34211ff59415f5bf1cc73e821801978fea33))
-* use colon instead of hyphen ([1491196](https://github.com/baumrock/RockShell/commit/14911963b8b1eadaaadc8ea0f6d060fd556c6049))
-
-
-### BREAKING CHANGES
-
-* change command syntax from hyphen to colon
 
 
 
