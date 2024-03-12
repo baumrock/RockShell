@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Console\Command as ConsoleCommand;
 use LogicException;
 use ProcessWire\ProcessWire;
+use ProcessWire\User;
 use ReflectionClass;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -54,6 +55,57 @@ class Command extends ConsoleCommand
       echo "  " . $item['file'] . ":" . $item['line'] . "\n";
     }
     echo "------------------\n";
+  }
+
+  /**
+   * Convert string to colonCase
+   * Converts FooBar to foo-bar
+   * Taken from PW Sanitizer
+   * @return string
+   */
+  public static function colonCase($value, array $options = array())
+  {
+
+    $defaults = array(
+      'hyphen' => ':',
+      'allow' => 'a-z0-9',
+      'allowUnderscore' => false,
+    );
+
+    $options = array_merge($defaults, $options);
+    $value = (string)$value;
+    $hyphen = $options['hyphen'];
+
+    // if value is empty then exit now
+    if (!strlen($value)) return '';
+
+    if ($options['allowUnderscore']) $options['allow'] .= '_';
+
+    // check if value is already in the right format, and return it if so
+    if (strtolower($value) === $value) {
+      if ($options['allow'] === $defaults['allow']) {
+        if (ctype_alnum(str_replace($hyphen, '', $value))) return $value;
+      } else {
+        if (preg_match('/^[' . $hyphen . $options['allow'] . ']+$/', $value)) return $value;
+      }
+    }
+
+    // don’t allow apostrophes to be separators
+    $value = str_replace(array("'", "’"), '', $value);
+    // some initial whitespace conversions to reduce workload on preg_replace
+    $value = str_replace(array(" ", "\r", "\n", "\t"), $hyphen, $value);
+    // convert everything not allowed to hyphens
+    $value = preg_replace('/[^' . $options['allow'] . ']+/i', $hyphen, $value);
+    // convert camel case to hyphenated
+    $value = preg_replace('/([[:lower:]])([[:upper:]])/', '$1' . $hyphen . '$2', $value);
+    // prevent doubled hyphens
+    $value = preg_replace('/' . $hyphen . $hyphen . '+/', $hyphen, $value);
+
+    if ($options['allowUnderscore']) {
+      $value = str_replace(array('-_', '_-'), '_', $value);
+    }
+
+    return strtolower(trim($value, $hyphen));
   }
 
   /**
@@ -109,7 +161,7 @@ class Command extends ConsoleCommand
   {
     $this->input = $input;
     $this->output = $output;
-    $this->sudo(true);
+    $this->sudo();
     return $this->handle();
   }
 
@@ -166,55 +218,9 @@ class Command extends ConsoleCommand
     echo $this->browser->getInternalResponse()->getContent();
   }
 
-  /**
-   * Convert string to colonCase
-   * Converts FooBar to foo-bar
-   * Taken from PW Sanitizer
-   * @return string
-   */
-  public static function colonCase($value, array $options = array())
+  public function isCLI(): bool
   {
-
-    $defaults = array(
-      'hyphen' => ':',
-      'allow' => 'a-z0-9',
-      'allowUnderscore' => false,
-    );
-
-    $options = array_merge($defaults, $options);
-    $value = (string)$value;
-    $hyphen = $options['hyphen'];
-
-    // if value is empty then exit now
-    if (!strlen($value)) return '';
-
-    if ($options['allowUnderscore']) $options['allow'] .= '_';
-
-    // check if value is already in the right format, and return it if so
-    if (strtolower($value) === $value) {
-      if ($options['allow'] === $defaults['allow']) {
-        if (ctype_alnum(str_replace($hyphen, '', $value))) return $value;
-      } else {
-        if (preg_match('/^[' . $hyphen . $options['allow'] . ']+$/', $value)) return $value;
-      }
-    }
-
-    // don’t allow apostrophes to be separators
-    $value = str_replace(array("'", "’"), '', $value);
-    // some initial whitespace conversions to reduce workload on preg_replace
-    $value = str_replace(array(" ", "\r", "\n", "\t"), $hyphen, $value);
-    // convert everything not allowed to hyphens
-    $value = preg_replace('/[^' . $options['allow'] . ']+/i', $hyphen, $value);
-    // convert camel case to hyphenated
-    $value = preg_replace('/([[:lower:]])([[:upper:]])/', '$1' . $hyphen . '$2', $value);
-    // prevent doubled hyphens
-    $value = preg_replace('/' . $hyphen . $hyphen . '+/', $hyphen, $value);
-
-    if ($options['allowUnderscore']) {
-      $value = str_replace(array('-_', '_-'), '_', $value);
-    }
-
-    return strtolower(trim($value, $hyphen));
+    return php_sapi_name() === 'cli';
   }
 
   /**
@@ -386,18 +392,19 @@ class Command extends ConsoleCommand
   }
 
   /**
-   * Change to the first superuser
+   * Make RockShell run as superuser
    * @return void
    */
-  public function sudo($silent = false): void
+  public function sudo(): void
   {
     if (!$this->wire()) return;
-    $role = $this->wire()->roles->get('superuser');
-    $su = $this->wire()->users->get("sort=id,roles=$role");
-    if (!$su->id and !$silent) {
-      $this->log("No superuser found");
-      return;
-    }
+    // this will create a new superuser at runtime
+    // this ensures that we can run rockshell without superusers on the system
+    // it also ensures that the user has the default language set which is
+    // important to avoid hard to find bugs where scripts set values
+    // in non-default languages
+    $su = new User();
+    $su->addRole("superuser");
     $this->wire()->users->setCurrentUser($su);
   }
 
