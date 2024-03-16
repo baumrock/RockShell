@@ -58,10 +58,10 @@ class PwInstall extends Command
 
   /** ##### steps ##### */
 
-  public function nextStep($reload = false)
+  public function nextStep($reload = false, $noConfirm = false)
   {
     $this->stepCount = $this->stepCount + 1;
-    if ($this->stepCount > 30) return; // hard limit to prevent endless loops
+    if ($this->stepCount > 50) return; // hard limit to prevent endless loops
 
     // if a reload is required we fire another request
     if ($reload) $this->browser->request('GET', $this->host('install.php'));
@@ -90,7 +90,7 @@ class PwInstall extends Command
     // next step?
     // if the last step returned false we break
     if ($next !== false) {
-      if ($this->skipNextConfirm) return $this->nextStep();
+      if ($this->skipNextConfirm || $noConfirm) return $this->nextStep();
       if ($this->confirm("Continue to next step?", true)) return $this->nextStep();
     }
   }
@@ -103,14 +103,28 @@ class PwInstall extends Command
 
   public function stepProfile()
   {
-    $this->write("Installing profile...");
+    // offer to download the rockfrontend site profile
+    $zip = 'https://github.com/baumrock/site-rockfrontend/archive/refs/heads/main.zip';
+    $exists = is_dir("site-rockfrontend-main");
+    if (!$exists && $this->confirm("Download Site-Profile \"RockFrontend + UIkit + TailwindCSS\" from $zip?")) {
+      if (!file_exists('main.zip')) {
+        $this->exec("wget $zip");
+      }
+      $this->write("Site Profile already exists");
+      $this->write('Extracting files ...');
+      $this->exec('unzip -q main.zip');
+      $this->nextStep(true, true);
+      return;
+    }
+
+    $this->write("Install site profile ...");
 
     $profiles = $this->browser
       ->getCrawler()
       ->filter('select[name=profile] > option')
       ->extract(['value']);
     if (!count($profiles)) {
-      $this->error("No profiles found - aborting...");
+      $this->error("No profiles found - aborting ...");
       die();
     }
     $profiles = array_values(array_filter($profiles));
@@ -121,7 +135,7 @@ class PwInstall extends Command
         $profiles[0]
       );
     }
-    $this->write("Using profile $profile...");
+    $this->write("Using profile $profile ...");
     $this->browser->submitForm("Continue", [
       'profile' => $profile,
     ]);
@@ -129,7 +143,7 @@ class PwInstall extends Command
 
   public function stepCompatibility()
   {
-    $this->write("Checking compatibility...");
+    $this->write("Checking compatibility ...");
     $errors = 0;
     $this->browser
       ->getCrawler()
@@ -153,7 +167,7 @@ class PwInstall extends Command
           $this->skipNextConfirm = true;
           $this->browser->submitForm('Continue to Next Step');
         } else {
-          $this->warn('Aborting...');
+          $this->warn('Aborting ...');
           die();
         }
       }
@@ -196,7 +210,7 @@ class PwInstall extends Command
 
   public function stepFinish()
   {
-    $this->success("Finishing installation...");
+    $this->success("Finishing installation ...");
     $this->writeNotes();
     return $this->stepReloadAdmin();
   }
@@ -219,7 +233,7 @@ class PwInstall extends Command
         $this->write($el->text());
       });
     if ($notices) {
-      $this->warn("Reloading...");
+      $this->warn("Reloading ...");
       return $this->stepReloadAdmin(false);
     } else {
       $this->success("\n"
@@ -387,7 +401,7 @@ class PwInstall extends Command
       $this->write('No ProcessWire Installer found');
       if (is_file($this->app->rootPath() . "index.php")) {
         $this->write("");
-        $this->error("Found index.php - aborting...");
+        $this->error("Found index.php - aborting ...");
         $this->write("");
         die();
       }
@@ -402,7 +416,7 @@ class PwInstall extends Command
 
         return $this->nextStep(true);
       }
-      $this->warn("Aborting...");
+      $this->warn("Aborting ...");
       die();
     }
 
@@ -440,7 +454,7 @@ class PwInstall extends Command
       $status = $this->browser->getInternalResponse()->getStatusCode();
       if ($status !== 404) {
         $this->error("Your host $host must be reachable via HTTP!");
-        $this->error("When using DDEV make sure it is running...");
+        $this->error("When using DDEV make sure it is running ");
         exit(1);
       } else {
         $this->success("HTTP status check for host $host was OK");

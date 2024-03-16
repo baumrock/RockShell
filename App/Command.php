@@ -425,6 +425,7 @@ class Command extends ConsoleCommand
   public function wire()
   {
     if ($this->wire) return $this->wire;
+    if ($this->wire === false) return;
     chdir($this->app->rootPath());
 
     // pw is not yet there, eg when using pw:install
@@ -433,6 +434,7 @@ class Command extends ConsoleCommand
     // pw is here but not installed
     if (is_file("install.php")) {
       $this->alert("ProcessWire exists but is not installed");
+      $this->wire = false;
       return false;
     }
 
