@@ -106,6 +106,7 @@ class Application extends ConsoleApplication
 
         // skip some files and folders
         if (strpos($info->getFilename(), ".") === 0) continue;
+        if (strpos($filename, "/export-profile/")) continue;
         if (strpos($filename, "/vendor/")) continue;
         if (strpos($filename, "/lib/")) continue;
         if (strpos($filename, "/tracy-")) continue;
