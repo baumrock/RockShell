@@ -130,7 +130,7 @@ class PwInstall extends Command
       $profile = $this->choice(
         "Select profile to install",
         $profiles,
-        $profiles[0]
+        "site-rockfrontend-main"
       );
     }
     $this->write("Using profile $profile ...");
@@ -343,7 +343,7 @@ class PwInstall extends Command
         else $value = $this->choice("DB not empty", [
           'remove',
           'ignore',
-        ]);
+        ], 0);
         $this->warn("\ndbTablesAction: $value"); // show always
         $skipAll = true;
       } else {
