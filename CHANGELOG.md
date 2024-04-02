@@ -1,3 +1,20 @@
+# [2.5.0](https://github.com/baumrock/RockShell/compare/v2.4.0...v2.5.0) (2024-04-02)
+
+
+### Bug Fixes
+
+* delete remaining main.zip ([07df661](https://github.com/baumrock/RockShell/commit/07df661765efdf41ee753cb076bf170c38b96ac1))
+* don't load commands in exported site profiles ([4ce3253](https://github.com/baumrock/RockShell/commit/4ce325316af42b0e1e59e03c81820e0777f7a13b))
+
+
+### Features
+
+* add option to directly download and install the new rockfrontend site profile ([b4389da](https://github.com/baumrock/RockShell/commit/b4389da832b07a4e226007390390d727a8922287))
+* download profile by default ([c33f703](https://github.com/baumrock/RockShell/commit/c33f703915f98200be6306bb95f6e5505c129796))
+* improve defaults ([85c70d3](https://github.com/baumrock/RockShell/commit/85c70d3ab0931f57d37f8fc138ebd235999b6eed))
+
+
+
 # [2.4.0](https://github.com/baumrock/RockShell/compare/v2.3.0...v2.4.0) (2024-03-12)
 
 
@@ -43,23 +60,6 @@
 ### Bug Fixes
 
 * use choice for site profile instead of completion ([3b6ebd2](https://github.com/baumrock/RockShell/commit/3b6ebd22935f16c5ee1b0f98b335bef9f4927dcb))
-
-
-
-# [2.1.0](https://github.com/baumrock/RockShell/compare/v2.0.0...v2.1.0) (2023-08-11)
-
-
-### Bug Fixes
-
-* command db:pull using old syntax ([52f78e4](https://github.com/baumrock/RockShell/commit/52f78e48d845b76eeebcaf95d0a90e207b7bd3ca))
-* install command not working for dotnetic ([2a68b11](https://github.com/baumrock/RockShell/commit/2a68b115a29749086d0c8901fef050749c58bfb1))
-* rename rockshell to rock everywhere and update readme ([2697bd6](https://github.com/baumrock/RockShell/commit/2697bd65bdcd4426c70d6bdfb88172f775ec20e3))
-
-
-### Features
-
-* add DbDownload command ([2e91be7](https://github.com/baumrock/RockShell/commit/2e91be726a335b70f720a63b8859a57350d2a6f3))
-* add warning if PHP version is too low ([a8caca8](https://github.com/baumrock/RockShell/commit/a8caca85695cd46899c0ee9fd2f516ce14b7351d))
 
 
 
