@@ -1,3 +1,12 @@
+# [2.6.0](https://github.com/baumrock/RockShell/compare/v2.5.0...v2.6.0) (2024-04-06)
+
+
+### Features
+
+* add .htaccess ([8301603](https://github.com/baumrock/RockShell/commit/830160353d001af42a4738ab06c8aee96889288f))
+
+
+
 # [2.5.0](https://github.com/baumrock/RockShell/compare/v2.4.0...v2.5.0) (2024-04-02)
 
 
@@ -51,15 +60,6 @@
 ### Features
 
 * upgrade dependencies to support PHP8.2 ([ab50736](https://github.com/baumrock/RockShell/commit/ab507365a2cf3aa365b86b8e1c61b43112166bd0))
-
-
-
-## [2.1.1](https://github.com/baumrock/RockShell/compare/v2.1.0...v2.1.1) (2023-11-02)
-
-
-### Bug Fixes
-
-* use choice for site profile instead of completion ([3b6ebd2](https://github.com/baumrock/RockShell/commit/3b6ebd22935f16c5ee1b0f98b335bef9f4927dcb))
 
 
 
