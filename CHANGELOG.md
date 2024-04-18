@@ -1,3 +1,12 @@
+# [2.7.0](https://github.com/baumrock/RockShell/compare/v2.6.0...v2.7.0) (2024-04-18)
+
+
+### Features
+
+* add modules refresh command ([e328f9e](https://github.com/baumrock/RockShell/commit/e328f9e746e8bb4db558972bfca84fc326e183cd))
+
+
+
 # [2.6.0](https://github.com/baumrock/RockShell/compare/v2.5.0...v2.6.0) (2024-04-06)
 
 
@@ -51,15 +60,6 @@
 * improve install command ([4e6f164](https://github.com/baumrock/RockShell/commit/4e6f1646cbc1301e3d17b8b9a417adc63ee3ff48))
 * make commands run as sudo ([02df9ae](https://github.com/baumrock/RockShell/commit/02df9aebec41218b7a4cabfa5139a82cba6f63b7))
 * use ddev_approot for localRootPath ([17a372a](https://github.com/baumrock/RockShell/commit/17a372add3b2baf55339327b1c4ed001decd8e5f))
-
-
-
-# [2.2.0](https://github.com/baumrock/RockShell/compare/v2.1.1...v2.2.0) (2024-01-03)
-
-
-### Features
-
-* upgrade dependencies to support PHP8.2 ([ab50736](https://github.com/baumrock/RockShell/commit/ab507365a2cf3aa365b86b8e1c61b43112166bd0))
 
 
 
