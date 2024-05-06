@@ -108,7 +108,8 @@ class PwInstall extends Command
     $exists = is_dir("site-rockfrontend-main");
     if (file_exists('main.zip')) $this->exec('rm main.zip');
     if (!$exists && $this->confirm("Download RockFrontend Site-Profile?", true)) {
-      $this->exec("wget $zip");
+      $this->write('Downloading ...');
+      $this->exec("wget --quiet $zip");
       $this->write('Extracting files ...');
       $this->exec('unzip -q main.zip');
       $this->nextStep(true, true);

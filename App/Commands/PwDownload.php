@@ -29,7 +29,7 @@ class PwDownload extends Command
         'dev'
       );
     $this->write("Downloading ProcessWire($version) to $path ...");
-    $this->exec("wget https://github.com/processwire/processwire/archive/$version.zip");
+    $this->exec("wget --quiet https://github.com/processwire/processwire/archive/$version.zip");
 
     $this->write("Extracting files...");
     $this->exec("unzip -q $version.zip");
