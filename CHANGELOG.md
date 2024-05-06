@@ -1,3 +1,19 @@
+# [2.8.0](https://github.com/baumrock/RockShell/compare/v2.7.0...v2.8.0) (2024-05-06)
+
+
+### Bug Fixes
+
+* double trailing slash on docroot ([af35ce1](https://github.com/baumrock/RockShell/commit/af35ce142fe48368a3e54616af847e0b098fcf43))
+* pw:install option ignores --url command line option [#8](https://github.com/baumrock/RockShell/issues/8) ([839f26f](https://github.com/baumrock/RockShell/commit/839f26f634ee22f41ebafb23cc11bba9f87e26a9))
+
+
+### Features
+
+* add gitignore for config-local.php ([db78215](https://github.com/baumrock/RockShell/commit/db78215b659242226df378883af48ae155f5e1c2))
+* make wget quiet as requested by [#9](https://github.com/baumrock/RockShell/issues/9) ([25f4a75](https://github.com/baumrock/RockShell/commit/25f4a756de0d330d09a1ea5228184bc707299e53))
+
+
+
 # [2.7.0](https://github.com/baumrock/RockShell/compare/v2.6.0...v2.7.0) (2024-04-18)
 
 
@@ -41,25 +57,6 @@
 * add isCLI() helper ([5f637e5](https://github.com/baumrock/RockShell/commit/5f637e53572a2f672c85c440bd609bcbd397b608))
 * improve how RockShell runs as superuser ([85bea3c](https://github.com/baumrock/RockShell/commit/85bea3c252f4160bfb23ef4376d77c6459a5441f))
 * move rockshell init in a dedicated file to support rockmigrations rockshell api ([cca1fcb](https://github.com/baumrock/RockShell/commit/cca1fcbbab116dbbed99ad9c7282651b0268e0a5))
-
-
-
-# [2.3.0](https://github.com/baumrock/RockShell/compare/v2.2.0...v2.3.0) (2024-02-04)
-
-
-### Bug Fixes
-
-* install command broken ([343b795](https://github.com/baumrock/RockShell/commit/343b7959366123c6832d6f73a4a54390932b7b3e))
-
-
-### Features
-
-* add backtrace() for cli debugging ([5c23d24](https://github.com/baumrock/RockShell/commit/5c23d24d9838c60480c4a60a808f609e4840e413))
-* add files:cleanup ([a242249](https://github.com/baumrock/RockShell/commit/a242249646bbf99860c77a85f43fa30b3f393e4b))
-* add user:reset command ([6e34d96](https://github.com/baumrock/RockShell/commit/6e34d960373e25a80bb6ba772f5022828dc10e7d))
-* improve install command ([4e6f164](https://github.com/baumrock/RockShell/commit/4e6f1646cbc1301e3d17b8b9a417adc63ee3ff48))
-* make commands run as sudo ([02df9ae](https://github.com/baumrock/RockShell/commit/02df9aebec41218b7a4cabfa5139a82cba6f63b7))
-* use ddev_approot for localRootPath ([17a372a](https://github.com/baumrock/RockShell/commit/17a372add3b2baf55339327b1c4ed001decd8e5f))
 
 
 
