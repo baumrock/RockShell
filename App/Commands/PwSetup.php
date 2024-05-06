@@ -15,7 +15,7 @@ class PwSetup extends Command
   {
     // add gitignore
     $this->write('Updating .gitignore ...');
-    $dst = $this->app->rootPath() . ".gitignore";
+    $dst = $this->app->docroot() . ".gitignore";
     $write = true;
     if (is_file($dst)) {
       if (!$this->confirm("$dst exists - overwrite it?", false)) {
@@ -32,7 +32,7 @@ class PwSetup extends Command
     $split = !is_file($this->wire()->config->paths->site . "config-local.php");
     if ($split and $this->confirm("Split config into config.php and config-local.php?", true)) {
       $this->warn('Adding config-local.php ...');
-      $dst = $this->app->rootPath() . "site/config-local.php";
+      $dst = $this->app->rootPath() . "config-local.php";
       $write = true;
       if (is_file($dst)) {
         if (!$this->confirm("$dst exists - overwrite it?", false)) {
@@ -48,11 +48,15 @@ class PwSetup extends Command
           'userAuthSalt' => $config->userAuthSalt,
           'tableSalt' => $config->tableSalt,
         ]);
+        $gitignore = $this->app->rootPath() . ".gitignore";
+        if (!is_file($gitignore)) {
+          file_put_contents($gitignore, "config-local.php\n");
+        }
       }
 
       // update config.php
       $this->write('Updating config.php ...');
-      $dst = $this->app->rootPath() . "site/config.php";
+      $dst = $this->app->docroot() . "site/config.php";
       $content = file_get_contents($dst);
       $stub = file_get_contents($this->stub('config.php'));
       file_put_contents($dst, $content . $stub);
@@ -99,7 +103,7 @@ class PwSetup extends Command
    */
   public function removeComments()
   {
-    $config = $this->app->rootPath() . "site/config.php";
+    $config = $this->app->docroot() . "site/config.php";
     if (!is_file($config)) return $this->error("config.php not found");
     $str = file_get_contents($config);
     $str = preg_replace("#\/\*\*\n([\S\s]*?)\*\/\n#m", "", $str);
@@ -113,7 +117,7 @@ class PwSetup extends Command
    */
   public function removeSalts()
   {
-    $config = $this->app->rootPath() . "site/config.php";
+    $config = $this->app->docroot() . "site/config.php";
     if (!is_file($config)) return $this->error("config.php not found");
     $str = file_get_contents($config);
     $str = preg_replace("/Installer: Table Salt([\S\s]*?);/m", "Table Salt moved to config-local.php\n */", $str);

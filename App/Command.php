@@ -426,7 +426,7 @@ class Command extends ConsoleCommand
   {
     if ($this->wire) return $this->wire;
     if ($this->wire === false) return;
-    chdir($this->app->rootPath());
+    chdir($this->app->docroot());
 
     // pw is not yet there, eg when using pw:install
     if (!is_file("index.php")) return false;

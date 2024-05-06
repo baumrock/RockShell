@@ -108,7 +108,8 @@ class PwInstall extends Command
     $exists = is_dir("site-rockfrontend-main");
     if (file_exists('main.zip')) $this->exec('rm main.zip');
     if (!$exists && $this->confirm("Download RockFrontend Site-Profile?", true)) {
-      $this->exec("wget $zip");
+      $this->write('Downloading ...');
+      $this->exec("wget --quiet $zip");
       $this->write('Extracting files ...');
       $this->exec('unzip -q main.zip');
       $this->nextStep(true, true);
@@ -216,7 +217,7 @@ class PwInstall extends Command
   public function stepReloadAdmin($notice = true)
   {
     if ($notice) $this->info("\nLoading ProcessWire ...");
-    chdir($this->app->rootPath());
+    chdir($this->app->docroot());
     include "index.php";
     /** @var ProcessWire $wire */
     $url = $this->host($wire->pages->get(2)->url);
@@ -315,8 +316,8 @@ class PwInstall extends Command
         if ($this->output->isVerbose()) $this->write("$name=" . implode(",", $hosts));
         $value = implode("\n", $hosts);
       } elseif ($name == 'admin_name') {
-        $label = "Enter url of your admin interface";
-        $value = $this->ask($label, "processwire");
+        $label = 'Enter url of your admin interface';
+        $value = $this->ask($label, $this->option('url') ?: 'processwire');
         if ($this->output->isVerbose()) $this->write("$name=$value");
       } elseif ($name == 'userpass_confirm') {
         $value = $this->askWithCompletion($name, $options, $pass);
@@ -397,7 +398,7 @@ class PwInstall extends Command
     $h1 = $h1->count() ? $h1->outerHtml() : '';
     if ($h1 !== '<h1 class="uk-margin-remove-top">ProcessWire 3.x Installer</h1>') {
       $this->write('No ProcessWire Installer found');
-      if (is_file($this->app->rootPath() . "index.php")) {
+      if (is_file($this->app->docroot() . "index.php")) {
         $this->write("");
         $this->error("Found index.php - aborting ...");
         $this->write("");
