@@ -316,8 +316,8 @@ class PwInstall extends Command
         if ($this->output->isVerbose()) $this->write("$name=" . implode(",", $hosts));
         $value = implode("\n", $hosts);
       } elseif ($name == 'admin_name') {
-        $label = "Enter url of your admin interface";
-        $value = $this->ask($label, "processwire");
+        $label = 'Enter url of your admin interface';
+        $value = $this->ask($label, $this->option('url') ?: 'processwire');
         if ($this->output->isVerbose()) $this->write("$name=$value");
       } elseif ($name == 'userpass_confirm') {
         $value = $this->askWithCompletion($name, $options, $pass);
