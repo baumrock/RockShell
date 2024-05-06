@@ -25,16 +25,7 @@ cd /path/to/pwroot
 php RockShell/rock
 ```
 
-You can either call the `rock` file directly as shown above or you can create a symlink that points to that file, so that you can call `php rock` directly from within the PW root folder:
-
-```sh
-cd /path/to/pw/RockShell
-php rock symlink
-
-# now that the symlink exists you can use short calls:
-cd /path/to/pw
-php rock ...
-```
+Pro-Tipp: Create an alias for that command so that you can simply use `rockshell` to interact with your PW instance! See the example below how that alias looks like on DDEV
 
 <img src=rockshell.png class=blur>
 
