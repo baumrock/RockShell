@@ -1,19 +1,26 @@
-<?php namespace RockShell;
+<?php
+
+namespace RockShell;
 
 use Symfony\Component\Console\Input\InputArgument;
 
-class PwDownload extends Command {
+class PwDownload extends Command
+{
 
-  public function config() {
+  public function config()
+  {
     $this
       ->setDescription("Download ProcessWire")
-      ->addArgument("version", InputArgument::OPTIONAL,
-        "ProcessWire version (master/dev)")
-    ;
+      ->addArgument(
+        "version",
+        InputArgument::OPTIONAL,
+        "ProcessWire version (master/dev)"
+      );
   }
 
-  public function handle() {
-    $path = $this->app->rootPath();
+  public function handle()
+  {
+    $path = $this->app->docroot();
     chdir($path);
     $version = $this->argument('version')
       ?: $this->askWithCompletion(
@@ -29,7 +36,7 @@ class PwDownload extends Command {
 
     // wait for unzip to be ready
     $cnt = 0;
-    while(!is_dir("processwire-$version") AND ++$cnt < 30) {
+    while (!is_dir("processwire-$version") and ++$cnt < 30) {
       $this->write("waiting for unzip...");
       sleep(1);
     }
@@ -40,11 +47,10 @@ class PwDownload extends Command {
     $this->exec("rm $version.zip");
     $this->exec("mv processwire-$version pwtmp");
     $this->exec('find pwtmp -mindepth 1 -maxdepth 1 -exec mv -t ./ {} +');
-    
+
     sleep(1);
     $this->exec("rm -rf pwtmp");
 
     return self::SUCCESS;
   }
-
 }

@@ -16,6 +16,8 @@ class Application extends ConsoleApplication
    */
   private $context = [];
 
+  private $docroot;
+
   /**
    * Path to root folder of the project having a trailing slash
    * @var string $root
@@ -32,6 +34,7 @@ class Application extends ConsoleApplication
     parent::__construct($container, $events, $version);
     $this->setName($name);
     $this->root = $this->normalizeSeparators(dirname(__DIR__)) . "/";
+    $this->docroot = $this->root . (getenv('DDEV_DOCROOT') ?: getenv('ROCKSHELL_DOCROOT')) . "/";
   }
 
   /**
@@ -73,6 +76,11 @@ class Application extends ConsoleApplication
     $this->context[$name] = $data;
   }
 
+  public function docroot()
+  {
+    return $this->docroot;
+  }
+
   /**
    * Find all command files in the current project
    *
@@ -89,8 +97,8 @@ class Application extends ConsoleApplication
   {
     $roots = [
       $this->root . "RockShell/App/",
-      $this->root . "site/modules",
-      $this->root . "site/assets",
+      $this->docroot . "site/modules",
+      $this->docroot . "site/assets",
     ];
     $files = array();
     foreach ($roots as $root) {
