@@ -48,6 +48,10 @@ class PwSetup extends Command
           'userAuthSalt' => $config->userAuthSalt,
           'tableSalt' => $config->tableSalt,
         ]);
+        $gitignore = $this->app->rootPath() . ".gitignore";
+        if (!is_file($gitignore)) {
+          file_put_contents($gitignore, "config-local.php\n");
+        }
       }
 
       // update config.php
