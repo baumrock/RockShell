@@ -34,7 +34,8 @@ class Application extends ConsoleApplication
     parent::__construct($container, $events, $version);
     $this->setName($name);
     $this->root = $this->normalizeSeparators(dirname(__DIR__)) . "/";
-    $this->docroot = $this->root . (getenv('DDEV_DOCROOT') ?: getenv('ROCKSHELL_DOCROOT')) . "/";
+    $this->docroot =
+      rtrim($this->root . (getenv('DDEV_DOCROOT') ?: getenv('ROCKSHELL_DOCROOT')), "/") . "/";
   }
 
   /**
