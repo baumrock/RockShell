@@ -21,10 +21,14 @@ class Ddevadmin extends Command
       : $this->wire()->users->get('roles=superuser');
 
     if ($u->id) {
+      $name = $u->name;
       $u->setAndSave('name', 'ddevadmin');
       $u->setAndSave('pass', 'ddevadmin');
-      $url = $this->wire()->pages->get(2)->url;
-      $this->success("Reset user $u - login url: $url");
+      $url = $this->wire()->pages->get(2)->httpUrl();
+      $this->success("Reset user $name with ID $u");
+      $this->write("  New username: ddevadmin");
+      $this->write("  New password: ddevadmin");
+      $this->write("  Login url: $url");
     } else {
       $this->warn("User $user not found");
       $users = $this->wire()->pages->find("include=all,template=user,sort=id,limit=50");
