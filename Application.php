@@ -120,6 +120,7 @@ class Application extends ConsoleApplication
         if (strpos($filename, "/lib/")) continue;
         if (strpos($filename, "/tracy-")) continue;
         if (!strpos($filename, "/RockShell/")) continue;
+        if (strpos($filename, '/site/modules/.')) continue;
 
         // if we find a new base command file we load it now
         // see readme about adding new base-commands to your project
