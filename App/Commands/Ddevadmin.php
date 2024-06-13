@@ -15,12 +15,16 @@ class Ddevadmin extends Command
 
   public function handle()
   {
-    $user = $this->argument('user') ?: 41;
-    $u = $this->wire()->users->get("name|id=$user");
+    $user = $this->argument('user');
+    $u = $user
+      ? $this->wire()->users->get("name=$user")
+      : $this->wire()->users->get('roles=superuser');
+
     if ($u->id) {
       $u->setAndSave('name', 'ddevadmin');
       $u->setAndSave('pass', 'ddevadmin');
-      $this->success("Reset user $u");
+      $url = $this->wire()->pages->get(2)->url;
+      $this->success("Reset user $u - login url: $url");
     } else {
       $this->warn("User $user not found");
       $users = $this->wire()->pages->find("include=all,template=user,sort=id,limit=50");
