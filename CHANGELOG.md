@@ -1,3 +1,15 @@
+## [3.1.0](https://github.com/baumrock/RockShell/compare/v3.0.0...v3.1.0) (2024-07-01)
+
+
+### Features
+
+* don't rely on id41 for superuser ([b7b8a85](https://github.com/baumrock/RockShell/commit/b7b8a8545708bb3e89c226e170f57fc3bfbb06ee))
+
+
+### Bug Fixes
+
+* exclude commands from dot-folders in site/modules ([8f9af77](https://github.com/baumrock/RockShell/commit/8f9af77ea811e6d1dd30d9e7b9db7d29cdcf7d2e))
+
 ## [3.0.0](https://github.com/baumrock/RockShell/compare/v2.8.0...v3.0.0) (2024-05-06)
 
 
@@ -41,19 +53,4 @@
 ### Features
 
 * add .htaccess ([8301603](https://github.com/baumrock/RockShell/commit/830160353d001af42a4738ab06c8aee96889288f))
-
-## [2.5.0](https://github.com/baumrock/RockShell/compare/v2.4.0...v2.5.0) (2024-04-02)
-
-
-### Features
-
-* add option to directly download and install the new rockfrontend site profile ([b4389da](https://github.com/baumrock/RockShell/commit/b4389da832b07a4e226007390390d727a8922287))
-* download profile by default ([c33f703](https://github.com/baumrock/RockShell/commit/c33f703915f98200be6306bb95f6e5505c129796))
-* improve defaults ([85c70d3](https://github.com/baumrock/RockShell/commit/85c70d3ab0931f57d37f8fc138ebd235999b6eed))
-
-
-### Bug Fixes
-
-* delete remaining main.zip ([07df661](https://github.com/baumrock/RockShell/commit/07df661765efdf41ee753cb076bf170c38b96ac1))
-* don't load commands in exported site profiles ([4ce3253](https://github.com/baumrock/RockShell/commit/4ce325316af42b0e1e59e03c81820e0777f7a13b))
 
