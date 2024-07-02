@@ -16,6 +16,7 @@ $config->sessionFingerprint = false;
 
 // RockFrontend
 $config->livereload = 1;
+$config->livereloadBuild = true;
 
 // RockMigrations
 // $config->filesOnDemand = 'https://your-live.site/';
@@ -30,4 +31,5 @@ $config->tracy = [
   'forceIsLocal' => true,
   'localRootPath' => getenv("DDEV_APPROOT"),
   'numLogEntries' => 100, // for RockMigrations
+  // 'editor' => 'cursor://file/%file:%line',
 ];
