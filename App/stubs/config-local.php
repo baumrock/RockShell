@@ -29,7 +29,7 @@ $config->tracy = [
   'outputMode' => 'development',
   'guestForceDevelopmentLocal' => true,
   'forceIsLocal' => true,
-  'localRootPath' => getenv("DDEV_APPROOT"),
+  'localRootPath' => getenv("TRACY_LOCALROOTPATH"),
   'numLogEntries' => 100, // for RockMigrations
   // 'editor' => 'cursor://file/%file:%line',
 ];
