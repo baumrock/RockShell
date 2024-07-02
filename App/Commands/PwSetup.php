@@ -29,29 +29,20 @@ class PwSetup extends Command
     }
 
     // add config-local.php
-    $split = !is_file($this->wire()->config->paths->site . "config-local.php");
-    if ($split and $this->confirm("Split config into config.php and config-local.php?", true)) {
+    $localConfig = $this->wire()->config->paths->site . "config-local.php";
+    if (!is_file($localConfig) and $this->confirm("Split config into config.php and config-local.php?", true)) {
       $this->warn('Adding config-local.php ...');
-      $dst = $this->app->rootPath() . "config-local.php";
-      $write = true;
-      if (is_file($dst)) {
-        if (!$this->confirm("$dst exists - overwrite it?", false)) {
-          $this->write("Aborting...");
-          $write = false;
-        }
-      }
-      if ($write) {
-        $src = $this->stub('config-local.php');
-        $config = $this->wire()->config;
-        $this->stubPopulate($src, $dst, [
-          'host' => $config->httpHost,
-          'userAuthSalt' => $config->userAuthSalt,
-          'tableSalt' => $config->tableSalt,
-        ]);
-        $gitignore = $this->app->rootPath() . ".gitignore";
-        if (!is_file($gitignore)) {
-          file_put_contents($gitignore, "config-local.php\n");
-        }
+
+      $src = $this->stub('config-local.php');
+      $config = $this->wire()->config;
+      $this->stubPopulate($src, $localConfig, [
+        'host' => $config->httpHost,
+        'userAuthSalt' => $config->userAuthSalt,
+        'tableSalt' => $config->tableSalt,
+      ]);
+      $gitignore = $this->app->rootPath() . ".gitignore";
+      if (!is_file($gitignore)) {
+        file_put_contents($gitignore, "config-local.php\n");
       }
 
       // update config.php
