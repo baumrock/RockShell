@@ -1,3 +1,10 @@
+## [3.1.1](https://github.com/baumrock/RockShell/compare/v3.1.0...v3.1.1) (2024-07-02)
+
+
+### Bug Fixes
+
+* wrong paths when using default folder structure ([0f1c509](https://github.com/baumrock/RockShell/commit/0f1c5099fd95a8006e97ba17383095a6f90a7106))
+
 ## [3.1.0](https://github.com/baumrock/RockShell/compare/v3.0.0...v3.1.0) (2024-07-01)
 
 
@@ -46,11 +53,4 @@
 ### Features
 
 * add modules refresh command ([e328f9e](https://github.com/baumrock/RockShell/commit/e328f9e746e8bb4db558972bfca84fc326e183cd))
-
-## [2.6.0](https://github.com/baumrock/RockShell/compare/v2.5.0...v2.6.0) (2024-04-06)
-
-
-### Features
-
-* add .htaccess ([8301603](https://github.com/baumrock/RockShell/commit/830160353d001af42a4738ab06c8aee96889288f))
 
