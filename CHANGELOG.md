@@ -1,3 +1,15 @@
+## [3.2.0](https://github.com/baumrock/RockShell/compare/v3.1.1...v3.2.0) (2024-08-01)
+
+
+### Features
+
+* update config-local stub ([2a9da08](https://github.com/baumrock/RockShell/commit/2a9da08fda74b02d5e122a134e417e2678e65cf4))
+
+
+### Bug Fixes
+
+* wrong env variable in config-local ([9497ecd](https://github.com/baumrock/RockShell/commit/9497ecdd77012d9fb7ce783e4e07d2c1d239fcf5))
+
 ## [3.1.1](https://github.com/baumrock/RockShell/compare/v3.1.0...v3.1.1) (2024-07-02)
 
 
@@ -46,11 +58,4 @@
 
 * double trailing slash on docroot ([af35ce1](https://github.com/baumrock/RockShell/commit/af35ce142fe48368a3e54616af847e0b098fcf43))
 * pw:install option ignores --url command line option [#8](https://github.com/baumrock/RockShell/issues/8) ([839f26f](https://github.com/baumrock/RockShell/commit/839f26f634ee22f41ebafb23cc11bba9f87e26a9))
-
-## [2.7.0](https://github.com/baumrock/RockShell/compare/v2.6.0...v2.7.0) (2024-04-18)
-
-
-### Features
-
-* add modules refresh command ([e328f9e](https://github.com/baumrock/RockShell/commit/e328f9e746e8bb4db558972bfca84fc326e183cd))
 
