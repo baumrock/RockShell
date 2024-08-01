@@ -29,6 +29,7 @@ class Application extends ConsoleApplication
     if (!$version) {
       $version = json_decode(file_get_contents(__DIR__ . "/package.json"))->version;
     }
+    $version .= ' @ PHP' . phpversion();
     $container = new Container;
     $events = new Dispatcher($container);
     parent::__construct($container, $events, $version);
