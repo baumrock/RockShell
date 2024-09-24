@@ -305,7 +305,9 @@ class PwInstall extends Command
           $default = $this->findTimezone($t, $options);
         } else $default = $options[$val];
 
-        $label = $this->askWithCompletion($name, $options, $default);
+
+        $label = "$name (type 'vienna' for Europe/Vienna to get autocomplete suggestions)";
+        $label = $this->askWithCompletion($label, $options, $default);
         $value = array_search($label, $options);
         if ($this->output->isVerbose()) $this->write("$name=$value, $label");
       } elseif ($name == 'httpHosts') {
