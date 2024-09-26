@@ -239,7 +239,6 @@ class PwInstall extends Command
         . "##### INSTALL SUCCESSFUL ######\n"
         . "### powered by baumrock.com ###\n");
       $this->warn("Login: $url");
-      $this->alert("You can now call rockshell pw:setup");
       die();
     }
   }
