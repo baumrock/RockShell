@@ -107,7 +107,7 @@ class PwInstall extends Command
     $zip = 'https://github.com/baumrock/site-rockfrontend/releases/latest/download/site-rockfrontend.zip';
     $exists = is_dir("site-rockfrontend");
     if (file_exists('site-rockfrontend.zip')) $this->exec('rm site-rockfrontend.zip');
-    if (!$exists && $this->confirm("Download RockFrontend Site-Profile?", true)) {
+    if (!$exists && $this->confirm("Download RockFrontend Site Profile?", true)) {
       $this->write('Downloading ...');
       $this->exec("wget --quiet $zip");
       $this->write('Extracting files ...');
