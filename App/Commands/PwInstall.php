@@ -104,14 +104,14 @@ class PwInstall extends Command
   public function stepProfile()
   {
     // offer to download the rockfrontend site profile
-    $zip = 'https://github.com/baumrock/site-rockfrontend/archive/refs/heads/main.zip';
-    $exists = is_dir("site-rockfrontend-main");
-    if (file_exists('main.zip')) $this->exec('rm main.zip');
+    $zip = 'https://github.com/baumrock/site-rockfrontend/releases/latest/download/site-rockfrontend.zip';
+    $exists = is_dir("site-rockfrontend");
+    if (file_exists('site-rockfrontend.zip')) $this->exec('rm site-rockfrontend.zip');
     if (!$exists && $this->confirm("Download RockFrontend Site-Profile?", true)) {
       $this->write('Downloading ...');
       $this->exec("wget --quiet $zip");
       $this->write('Extracting files ...');
-      $this->exec('unzip -q main.zip');
+      $this->exec('unzip -q site-rockfrontend.zip');
       $this->nextStep(true, true);
       return;
     }
