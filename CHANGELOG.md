@@ -1,3 +1,17 @@
+## [3.3.0](https://github.com/baumrock/RockShell/compare/v3.2.0...v3.3.0) (2024-10-01)
+
+
+### Features
+
+* add support for shorthand dbpull options ([ecb3596](https://github.com/baumrock/RockShell/commit/ecb359634fa51a2c1dd958de4935a6b893b92ea5))
+* update install command to reflect new site profile setup ([df6f25b](https://github.com/baumrock/RockShell/commit/df6f25bc21c209fc6c3ac5b40aa0d179afdd25d8))
+
+
+### Bug Fixes
+
+* use site-rockfrontend as default only if it exists ([03c7210](https://github.com/baumrock/RockShell/commit/03c721072f85fef46afd1934fefa5929b2851819))
+* wrong site profile name ([6818b87](https://github.com/baumrock/RockShell/commit/6818b8766cab1870512484a61ec77288322a186c))
+
 ## [3.2.0](https://github.com/baumrock/RockShell/compare/v3.1.1...v3.2.0) (2024-08-01)
 
 
@@ -39,23 +53,4 @@
 ### Features
 
 * add new checkout version ([aad8186](https://github.com/baumrock/RockShell/commit/aad818618743516342ca495fb15afd1d09816c8b))
-
-## [2.8.0](https://github.com/baumrock/RockShell/compare/v2.7.0...v2.8.0) (2024-05-06)
-
-
-### ⚠ BREAKING CHANGES
-
-* new folder structure
-
-### Features
-
-* add gitignore for config-local.php ([db78215](https://github.com/baumrock/RockShell/commit/db78215b659242226df378883af48ae155f5e1c2))
-* make wget quiet as requested by [#9](https://github.com/baumrock/RockShell/issues/9) ([25f4a75](https://github.com/baumrock/RockShell/commit/25f4a756de0d330d09a1ea5228184bc707299e53))
-* new folder structure ([b52b3ed](https://github.com/baumrock/RockShell/commit/b52b3edf7c204df2ab037ba20e09fb01f5ab55ea))
-
-
-### Bug Fixes
-
-* double trailing slash on docroot ([af35ce1](https://github.com/baumrock/RockShell/commit/af35ce142fe48368a3e54616af847e0b098fcf43))
-* pw:install option ignores --url command line option [#8](https://github.com/baumrock/RockShell/issues/8) ([839f26f](https://github.com/baumrock/RockShell/commit/839f26f634ee22f41ebafb23cc11bba9f87e26a9))
 
