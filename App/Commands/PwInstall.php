@@ -104,14 +104,14 @@ class PwInstall extends Command
   public function stepProfile()
   {
     // offer to download the rockfrontend site profile
-    $zip = 'https://github.com/baumrock/site-rockfrontend/archive/refs/heads/main.zip';
-    $exists = is_dir("site-rockfrontend-main");
-    if (file_exists('main.zip')) $this->exec('rm main.zip');
-    if (!$exists && $this->confirm("Download RockFrontend Site-Profile?", true)) {
+    $zip = 'https://github.com/baumrock/site-rockfrontend/releases/latest/download/site-rockfrontend.zip';
+    $exists = is_dir("site-rockfrontend");
+    if (file_exists('site-rockfrontend.zip')) $this->exec('rm site-rockfrontend.zip');
+    if (!$exists && $this->confirm("Download RockFrontend Site Profile?", true)) {
       $this->write('Downloading ...');
       $this->exec("wget --quiet $zip");
       $this->write('Extracting files ...');
-      $this->exec('unzip -q main.zip');
+      $this->exec('unzip -q site-rockfrontend.zip');
       $this->nextStep(true, true);
       return;
     }
@@ -131,7 +131,7 @@ class PwInstall extends Command
       $profile = $this->choice(
         "Select profile to install",
         $profiles,
-        "site-rockfrontend-main"
+        in_array('site-rockfrontend', $profiles) ? 'site-rockfrontend' : $profiles[0]
       );
     }
     $this->write("Using profile $profile ...");
@@ -239,7 +239,6 @@ class PwInstall extends Command
         . "##### INSTALL SUCCESSFUL ######\n"
         . "### powered by baumrock.com ###\n");
       $this->warn("Login: $url");
-      $this->alert("You can now call rockshell pw:setup");
       die();
     }
   }
@@ -305,7 +304,9 @@ class PwInstall extends Command
           $default = $this->findTimezone($t, $options);
         } else $default = $options[$val];
 
-        $label = $this->askWithCompletion($name, $options, $default);
+
+        $label = "$name (type 'vienna' for Europe/Vienna to get autocomplete suggestions)";
+        $label = $this->askWithCompletion($label, $options, $default);
         $value = array_search($label, $options);
         if ($this->output->isVerbose()) $this->write("$name=$value, $label");
       } elseif ($name == 'httpHosts') {

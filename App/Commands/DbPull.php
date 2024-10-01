@@ -55,6 +55,12 @@ class DbPull extends Command
       }
     } else {
       $remoteName = $this->argument("remote") ?: $this->choice("Choose remote", array_keys($remotes));
+      if ($remoteName === 'p' && array_key_exists('production', $remotes)) {
+        $remoteName = 'production';
+      }
+      if ($remoteName === 's' && array_key_exists('staging', $remotes)) {
+        $remoteName = 'staging';
+      }
       $remote = (object)$remotes[$remoteName];
     }
 
