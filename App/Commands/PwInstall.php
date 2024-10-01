@@ -131,7 +131,7 @@ class PwInstall extends Command
       $profile = $this->choice(
         "Select profile to install",
         $profiles,
-        "site-rockfrontend"
+        in_array('site-rockfrontend', $profiles) ? 'site-rockfrontend' : $profiles[0]
       );
     }
     $this->write("Using profile $profile ...");
