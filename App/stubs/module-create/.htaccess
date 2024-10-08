@@ -1,0 +1,11 @@
+# block public access to all files
+<FilesMatch ".*">
+  Order Deny,Allow
+  Deny from all
+</FilesMatch>
+
+# example of how to allow public access to a specific folder
+# <FilesMatch "^dst/.*">
+#   Order Allow,Deny
+#   Allow from all
+# </FilesMatch>

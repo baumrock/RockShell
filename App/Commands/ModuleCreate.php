@@ -33,7 +33,11 @@ class ModuleCreate extends Command
     );
     wire()->files->copy(
       $src . '/package.json',
-      $dst . '/package.json',
+      $dst,
+    );
+    wire()->files->copy(
+      $src . '/.htaccess',
+      $dst,
     );
     $this->stubPopulate(
       $src . '/MyModule.info.php',
