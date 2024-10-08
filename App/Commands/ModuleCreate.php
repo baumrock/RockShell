@@ -7,8 +7,7 @@ use Symfony\Component\Console\Input\InputOption;
 use function ProcessWire\wire;
 
 /**
- * Demonstrates different output styles
- * See also Hello.php
+ * Create a new module with all necessary files
  */
 class ModuleCreate extends Command
 {
