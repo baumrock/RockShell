@@ -49,6 +49,13 @@ class ModuleCreate extends Command
       quiet: true,
       brackets: false,
     );
+    $this->stubPopulate(
+      $src . '/readme.md',
+      $dst . "/readme.md",
+      $replace,
+      quiet: true,
+      brackets: false,
+    );
   }
 
   private function getDir($name): string
