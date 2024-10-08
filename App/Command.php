@@ -192,6 +192,57 @@ class Command extends ConsoleCommand
     return $config;
   }
 
+  public function goodbye(): void
+  {
+    // return a random goodbye message
+    $goodbyeMessages = [
+      "Have a nice day!",
+      "Goodbye!",
+      "See you later!",
+      "Take care!",
+      "Catch you later!",
+      "Farewell!",
+      "Bye for now!",
+      "Until next time!",
+      "Peace out!",
+      "Stay safe!",
+      "Adios!",
+      "Ciao!",
+      "Sayonara!",
+      "Au revoir!",
+      "Toodle-oo!",
+      "Cheerio!",
+      "Later, alligator!",
+      "After a while, crocodile!",
+      "Keep it real!",
+      "Stay classy!",
+      "Happy coding!",
+      "May the force be with you!",
+      "Keep calm and code on!",
+      "May your code be bug-free!",
+      "404: Goodbye message not found! No worries, it's a joke ;)",
+      "See you on the flip side!",
+      "Don't let the semicolon bite you!",
+      "Keep on hacking!",
+      "May your coffee be strong and your code be short!",
+      "Happy debugging!",
+      "Keep pull requests coming!",
+      "May your code compile on the first try!",
+      "Stay DRY!",
+      "Keep your code clean!",
+      "May your functions be pure and your variables immutable!",
+      "Don't let the bugs bite you!",
+      "Keep your codebase tidy!",
+      "May your tests always pass!",
+      "May your code be as efficient as a well-oiled machine!",
+      "Don't forget to take breaks!",
+      "Keep your code simple and your logic sound!",
+      "May your algorithms be swift and your data structures robust!"
+    ];
+    // return a random goodbye message
+    $this->write($goodbyeMessages[array_rand($goodbyeMessages)]);
+  }
+
   /**
    * Execute this command
    */

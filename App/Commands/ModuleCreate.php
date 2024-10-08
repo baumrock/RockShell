@@ -52,6 +52,11 @@ class ModuleCreate extends Command
     );
   }
 
+  private function getDir($name): string
+  {
+    return wire()->config->paths->siteModules . $name;
+  }
+
   public function handle()
   {
     $types = ['Module', 'Process Module', 'Fieldtype Module', 'Inputfield Module'];
@@ -62,6 +67,11 @@ class ModuleCreate extends Command
     }
     $name = $this->moduleName();
     $this->copyFiles($name);
+
+    $dir = $this->getDir($name);
+    $this->success("Module created at $dir");
+    $this->goodbye();
+
     return self::SUCCESS;
   }
 
@@ -78,7 +88,7 @@ class ModuleCreate extends Command
     }
 
     // check if it exists
-    $dir = wire()->config->paths->siteModules . $name;
+    $dir = $this->getDir($name);
     if (is_dir($dir)) {
       $this->warn("$dir already exists");
 
