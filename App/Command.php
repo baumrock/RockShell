@@ -373,12 +373,23 @@ class Command extends ConsoleCommand
    * Populate stub placeholders
    * @return void
    */
-  public function stubPopulate($src, $dst, $vars = [])
-  {
+  public function stubPopulate(
+    $src,
+    $dst,
+    $vars = [],
+    $quiet = false,
+    $brackets = "{}"
+  ) {
+    $src = realpath($src);
     $content = file_get_contents($src);
-    $this->write("Writing $src to $dst");
+    if (!$quiet) {
+      $this->write("Writing $src");
+      $this->write("  to $dst");
+    }
+    $left = @$brackets[0];
+    $right = @$brackets[1];
     foreach ($vars as $k => $v) {
-      $content = str_replace("{" . $k . "}", $v, $content);
+      $content = str_replace($left . $k . $right, $v, $content);
     }
     file_put_contents($dst, $content);
   }
