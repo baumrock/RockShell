@@ -457,11 +457,17 @@ class PwInstall extends Command
     }
 
     foreach ($urlsToCheck as $url) {
-        $this->browser->request("GET", $url);
-        if ($this->browser->getInternalResponse()->getStatusCode() === 200) {
-            $this->success("Status check for host $url was OK");
-            return "$url/$site";
-        }
+      $this->browser->request("GET", $url);
+      $status = $this->browser->getInternalResponse()->getStatusCode();
+      if ($status === 200) {
+          $this->success("Status check for host $url was OK");
+          return "$url/$site";
+      }
+      if ($status === 403) {
+          $this->success("Status check for host $url was OK");
+          $this->warn("Access is forbidden (403). This may be expected during installation.");
+          return "$url/$site";
+      }
     }
 
     $this->error("Your host $host must be reachable via HTTP or HTTPS!");
