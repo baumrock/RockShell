@@ -439,29 +439,34 @@ class PwInstall extends Command
 
   public function host($site)
   {
-    $defaulthost = getenv('DDEV_PROJECT')
-      ? getenv('DDEV_PROJECT') . ".ddev.site"
-      : "example.com";
+    $defaulthost = getenv('DDEV_PROJECT') ? getenv('DDEV_PROJECT') . ".ddev.site" : "example.com";
     $site = ltrim($site, "/");
-    $checkHTTP = !$this->host;
-    $host = $this->host ?: $this->option('host')
-      ?: $this->ask('Enter host', $defaulthost);
+    $host = $this->host ?: $this->option('host') ?: $this->ask('Enter host', $defaulthost);
     $this->host = $host;
 
-    // check if host is reachable via HTTP
-    if ($checkHTTP) {
-      $this->browser->request("GET", $host);
-      $status = $this->browser->getInternalResponse()->getStatusCode();
-      if ($status !== 404) {
-        $this->error("Your host $host must be reachable via HTTP!");
-        $this->error("When using DDEV make sure it is running ");
-        exit(1);
-      } else {
-        $this->success("HTTP status check for host $host was OK");
-      }
+    // Ports from environment
+    $httpPort = getenv('DDEV_ROUTER_HTTP_PORT');
+    $httpsPort = getenv('DDEV_ROUTER_HTTPS_PORT');
+
+    $urlsToCheck = [];
+    if (parse_url($host, PHP_URL_PORT) === null) {  // No port in host
+        if ($httpsPort) $urlsToCheck[] = "https://$host:$httpsPort";
+        if ($httpPort) $urlsToCheck[] = "http://$host:$httpPort";
+    } else {
+        $urlsToCheck = ["https://$host", "http://$host"];
     }
 
-    return "http://$host/$site";
+    foreach ($urlsToCheck as $url) {
+        $this->browser->request("GET", $url);
+        if ($this->browser->getInternalResponse()->getStatusCode() === 200) {
+            $this->success("Status check for host $url was OK");
+            return "$url/$site";
+        }
+    }
+
+    $this->error("Your host $host must be reachable via HTTP or HTTPS!");
+    $this->error("When using DDEV make sure it is running.");
+    exit(1);
   }
 
   public function writeNotes()
