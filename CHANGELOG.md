@@ -1,3 +1,10 @@
+## [3.4.1](https://github.com/baumrock/RockShell/compare/v3.4.0...v3.4.1) (2024-11-08)
+
+
+### Bug Fixes
+
+* update dependencies to fix security issue in symfony/process ([d91b404](https://github.com/baumrock/RockShell/commit/d91b404e04898e534bf6e008250a8bd2652816e3))
+
 ## [3.4.0](https://github.com/baumrock/RockShell/compare/v3.3.0...v3.4.0) (2024-11-03)
 
 
@@ -47,16 +54,4 @@
 ### Bug Fixes
 
 * wrong paths when using default folder structure ([0f1c509](https://github.com/baumrock/RockShell/commit/0f1c5099fd95a8006e97ba17383095a6f90a7106))
-
-## [3.1.0](https://github.com/baumrock/RockShell/compare/v3.0.0...v3.1.0) (2024-07-01)
-
-
-### Features
-
-* don't rely on id41 for superuser ([b7b8a85](https://github.com/baumrock/RockShell/commit/b7b8a8545708bb3e89c226e170f57fc3bfbb06ee))
-
-
-### Bug Fixes
-
-* exclude commands from dot-folders in site/modules ([8f9af77](https://github.com/baumrock/RockShell/commit/8f9af77ea811e6d1dd30d9e7b9db7d29cdcf7d2e))
 
