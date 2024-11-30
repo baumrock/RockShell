@@ -20,16 +20,28 @@ class ModuleInstall extends Command
 
   public function handle()
   {
+    // check name
+    $name = $this->option('name');
+    while (!$name) $name = $this->ask("Please enter the module's name");
+
+    wire()->modules->refresh();
+
+    // special case for RockMigrations
+    if ($name == 'RockMigrations') {
+      $rm = wire()->modules->get('RockMigrations');
+      if (!$rm) {
+        $this->error("RockMigrations module not found");
+        return self::FAILURE;
+      }
+      return self::SUCCESS;
+    }
+
     // load RockMigrations
     $rm = wire()->modules->get('RockMigrations');
     if (!$rm) {
       $this->error("RockMigrations module not found");
       return self::FAILURE;
     }
-
-    // check name
-    $name = $this->option('name');
-    while (!$name) $name = $this->ask("Please enter the module's name");
 
     // install module
     $rm->installModule($name);
