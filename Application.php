@@ -22,7 +22,7 @@ class Application extends ConsoleApplication
    * Path to root folder of the project having a trailing slash
    * @var string $root
    */
-  private $root;
+  public $root;
 
   public function __construct($name = "RockShell", $version = null)
   {
