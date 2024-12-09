@@ -1,3 +1,10 @@
+## [3.5.0](https://github.com/baumrock/RockShell/compare/v3.4.1...v3.5.0) (2024-12-09)
+
+
+### Features
+
+* make it possible to install RockMigrations via install command ([8ce5b4f](https://github.com/baumrock/RockShell/commit/8ce5b4f6767fcb00d1ce8499f122c6cad4436e66))
+
 ## [3.4.1](https://github.com/baumrock/RockShell/compare/v3.4.0...v3.4.1) (2024-11-08)
 
 
@@ -47,11 +54,4 @@
 ### Bug Fixes
 
 * wrong env variable in config-local ([9497ecd](https://github.com/baumrock/RockShell/commit/9497ecdd77012d9fb7ce783e4e07d2c1d239fcf5))
-
-## [3.1.1](https://github.com/baumrock/RockShell/compare/v3.1.0...v3.1.1) (2024-07-02)
-
-
-### Bug Fixes
-
-* wrong paths when using default folder structure ([0f1c509](https://github.com/baumrock/RockShell/commit/0f1c5099fd95a8006e97ba17383095a6f90a7106))
 
