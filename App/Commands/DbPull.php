@@ -77,7 +77,7 @@ class DbPull extends Command
     $this->sshExec($ssh, "cd $dir && $cmd");
 
     $this->write("Copying dump to local...");
-    $this->exec("scp $ssh:$dir/$folder/tmp.sql {$wire->config->paths->root}/$folder/tmp.sql");
+    $this->exec("scp $ssh:$dir/$folder/tmp.sql {$wire->config->paths->root}$folder/tmp.sql");
 
     $this->write("Removing remote dump...");
     $this->sshExec($ssh, "cd $dir && rm -rf $dir/$folder/tmp.sql");
