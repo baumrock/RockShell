@@ -1,3 +1,11 @@
+## [3.5.1](https://github.com/baumrock/RockShell/compare/v3.5.0...v3.5.1) (2025-01-11)
+
+
+### Bug Fixes
+
+* change root property to private ([0205d74](https://github.com/baumrock/RockShell/commit/0205d74292271862c75bcc92fb47792ea5f3497b))
+* wrong double slash in dbpull command ([c58d7e3](https://github.com/baumrock/RockShell/commit/c58d7e3113681fdd3439cfe5e7f9567223633237))
+
 ## [3.5.0](https://github.com/baumrock/RockShell/compare/v3.4.1...v3.5.0) (2024-12-09)
 
 
@@ -42,16 +50,4 @@
 
 * use site-rockfrontend as default only if it exists ([03c7210](https://github.com/baumrock/RockShell/commit/03c721072f85fef46afd1934fefa5929b2851819))
 * wrong site profile name ([6818b87](https://github.com/baumrock/RockShell/commit/6818b8766cab1870512484a61ec77288322a186c))
-
-## [3.2.0](https://github.com/baumrock/RockShell/compare/v3.1.1...v3.2.0) (2024-08-01)
-
-
-### Features
-
-* update config-local stub ([2a9da08](https://github.com/baumrock/RockShell/commit/2a9da08fda74b02d5e122a134e417e2678e65cf4))
-
-
-### Bug Fixes
-
-* wrong env variable in config-local ([9497ecd](https://github.com/baumrock/RockShell/commit/9497ecdd77012d9fb7ce783e4e07d2c1d239fcf5))
 
