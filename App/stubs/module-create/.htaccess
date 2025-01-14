@@ -4,7 +4,7 @@
     RewriteEngine On
 
     # Example to allow access to js/css files in dst folder
-    # RewriteCond %{REQUEST_FILENAME} !^.*/dst/.*\.(js|css)$
+    RewriteCond %{REQUEST_FILENAME} !^.*/dst/.*\.(js|css)$
 
     # 403 forbidden
     RewriteRule ^ - [F,L]
