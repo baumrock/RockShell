@@ -1,3 +1,10 @@
+## [3.5.2](https://github.com/baumrock/RockShell/compare/v3.5.1...v3.5.2) (2025-01-21)
+
+
+### Bug Fixes
+
+* security update of dependencies ([0788ac2](https://github.com/baumrock/RockShell/commit/0788ac271e42cded79fd3068ec492d782ab8d7ed))
+
 ## [3.5.1](https://github.com/baumrock/RockShell/compare/v3.5.0...v3.5.1) (2025-01-11)
 
 
@@ -36,18 +43,4 @@
 ### Bug Fixes
 
 * update host method to handle 403 status ([92dc56c](https://github.com/baumrock/RockShell/commit/92dc56c47c9ffe8e88f14e81f38ed4cf31a44513))
-
-## [3.3.0](https://github.com/baumrock/RockShell/compare/v3.2.0...v3.3.0) (2024-10-01)
-
-
-### Features
-
-* add support for shorthand dbpull options ([ecb3596](https://github.com/baumrock/RockShell/commit/ecb359634fa51a2c1dd958de4935a6b893b92ea5))
-* update install command to reflect new site profile setup ([df6f25b](https://github.com/baumrock/RockShell/commit/df6f25bc21c209fc6c3ac5b40aa0d179afdd25d8))
-
-
-### Bug Fixes
-
-* use site-rockfrontend as default only if it exists ([03c7210](https://github.com/baumrock/RockShell/commit/03c721072f85fef46afd1934fefa5929b2851819))
-* wrong site profile name ([6818b87](https://github.com/baumrock/RockShell/commit/6818b8766cab1870512484a61ec77288322a186c))
 
