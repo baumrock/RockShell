@@ -66,7 +66,7 @@ class DbDownload extends Command
     $this->sshExec($ssh, "cd $dir
       $php RockShell/rock db:dump -f tmp.sql", true);
 
-    $this->write("Copying dump to local ...");
+    $this->write("Copying dump to {$wire->config->paths->root}$folder/tmp.sql ...");
     $this->exec("scp $ssh:$dir/$folder/tmp.sql {$wire->config->paths->root}$folder/tmp.sql");
 
     $this->write("Removing remote dump ...");
