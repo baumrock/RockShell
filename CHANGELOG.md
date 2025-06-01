@@ -1,3 +1,15 @@
+## [3.6.0](https://github.com/baumrock/RockShell/compare/v3.5.3...v3.6.0) (2025-06-01)
+
+
+### Features
+
+* add URL normalization and cleaning for httpHosts array ([8be38af](https://github.com/baumrock/RockShell/commit/8be38afbb91b160997962dab9f733c9d57699ffd))
+
+
+### Bug Fixes
+
+* remove try/catch to make development easier ([1723a8f](https://github.com/baumrock/RockShell/commit/1723a8fc09e91c3f9cd6cf801ed4daaa48182598))
+
 ## [3.5.3](https://github.com/baumrock/RockShell/compare/v3.5.2...v3.5.3) (2025-01-21)
 
 
@@ -26,11 +38,4 @@
 ### Features
 
 * make it possible to install RockMigrations via install command ([8ce5b4f](https://github.com/baumrock/RockShell/commit/8ce5b4f6767fcb00d1ce8499f122c6cad4436e66))
-
-## [3.4.1](https://github.com/baumrock/RockShell/compare/v3.4.0...v3.4.1) (2024-11-08)
-
-
-### Bug Fixes
-
-* update dependencies to fix security issue in symfony/process ([d91b404](https://github.com/baumrock/RockShell/commit/d91b404e04898e534bf6e008250a8bd2652816e3))
 
