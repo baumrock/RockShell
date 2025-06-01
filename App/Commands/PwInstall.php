@@ -246,6 +246,68 @@ class PwInstall extends Command
   /** ##### end steps ##### */
 
   /**
+   * Normalize a URL: remove :443 for https and :80 for http
+   */
+  private function normalizeUrl($url) {
+    $parts = parse_url($url);
+    if (!$parts || !isset($parts['scheme'], $parts['host'])) return $url;
+
+    $scheme = $parts['scheme'];
+    $host = $parts['host'];
+    $port = $parts['port'] ?? null;
+    $path = $parts['path'] ?? '';
+
+    $isDefaultPort = ($scheme === 'https' && ($port == 443 || $port === null)) ||
+                     ($scheme === 'http' && ($port == 80 || $port === null));
+
+    if (!$isDefaultPort && $port) {
+        return "$scheme://$host:$port$path";
+    }
+
+    return "$scheme://$host$path";
+}
+
+
+  /**
+   * Cleans and normalizes the httpHosts array
+   */
+  private function cleanHttpHostsArray($hosts): array {
+    if (is_string($hosts)) {
+      $hosts = preg_split('/[\s,]+/', $hosts);
+    }
+    $hosts = array_map('trim', $hosts);
+    $hosts = array_filter($hosts);
+
+    $seen = [];
+    $cleaned = [];
+
+    foreach ($hosts as $host) {
+      // extract bare host if port is 80/443
+      if (preg_match('/^(.+):(443|80)$/', $host, $m)) {
+        $bare = $m[1];
+        // if we've already seen the bare host, skip
+        if (isset($seen[$bare])) continue;
+        // mark this host as seen but don't add yet
+        if (!isset($seen[$host])) $seen[$host] = 'skip';
+        continue;
+      }
+
+      // if it's a bare host and we've seen the port version, override
+      $seen[$host] = 'add';
+      $cleaned[] = $host;
+    }
+
+    // Add port-specific hosts if their bare host hasn't been added
+    foreach ($seen as $host => $action) {
+      if ($action === 'skip') $cleaned[] = $host;
+    }
+
+    return array_values(array_unique($cleaned));
+  }
+
+
+
+  /**
    * @return Form
    */
   public function fillForm($defaults = [])
@@ -311,10 +373,13 @@ class PwInstall extends Command
         if ($this->output->isVerbose()) $this->write("$name=$value, $label");
       } elseif ($name == 'httpHosts') {
         $label = "$name (enter comma separated list)";
+        if (!empty($default)) {
+          $defaultLines = $this->cleanHttpHostsArray($default);
+          $default = implode("\n", $defaultLines);
+        }
         $value = $this->askWithCompletion($label, $options, $default);
-        $hosts = explode(",", $value);
+        $hosts = is_string($value) ? preg_split('/[\n,]+/', $value) : (array)$value;
         $hosts = array_filter(array_map('trim', $hosts));
-        if ($this->output->isVerbose()) $this->write("$name=" . implode(",", $hosts));
         $value = implode("\n", $hosts);
       } elseif ($name == 'admin_name') {
         $label = 'Enter url of your admin interface';
@@ -450,10 +515,13 @@ class PwInstall extends Command
 
     $urlsToCheck = [];
     if (parse_url($host, PHP_URL_PORT) === null) {  // No port in host
-        if ($httpsPort) $urlsToCheck[] = "https://$host:$httpsPort";
-        if ($httpPort) $urlsToCheck[] = "http://$host:$httpPort";
+        if ($httpsPort) $urlsToCheck[] = $this->normalizeUrl("https://$host:$httpsPort");
+        if ($httpPort) $urlsToCheck[] = $this->normalizeUrl("http://$host:$httpPort");
     } else {
-        $urlsToCheck = ["https://$host", "http://$host"];
+        $urlsToCheck = [
+          $this->normalizeUrl("https://$host"),
+          $this->normalizeUrl("http://$host")
+        ];
     }
 
     foreach ($urlsToCheck as $url) {
