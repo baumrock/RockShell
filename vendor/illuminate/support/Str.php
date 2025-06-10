@@ -11,7 +11,9 @@ use League\CommonMark\Extension\InlinesOnly\InlinesOnlyExtension;
 use League\CommonMark\GithubFlavoredMarkdownConverter;
 use League\CommonMark\MarkdownConverter;
 use Ramsey\Uuid\Codec\TimestampFirstCombCodec;
+use Ramsey\Uuid\Exception\InvalidUuidStringException;
 use Ramsey\Uuid\Generator\CombGenerator;
+use Ramsey\Uuid\Rfc4122\FieldsInterface;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidFactory;
 use Symfony\Component\Uid\Ulid;
@@ -459,7 +461,7 @@ class Str
      */
     public static function wrap($value, $before, $after = null)
     {
-        return $before.$value.($after ??= $before);
+        return $before.$value.($after ?? $before);
     }
 
     /**
@@ -505,7 +507,7 @@ class Str
             // If the given value is an exact match we can of course return true right
             // from the beginning. Otherwise, we will translate asterisks and do an
             // actual pattern match against the two strings to see if they match.
-            if ($pattern === $value) {
+            if ($pattern === '*' || $pattern === $value) {
                 return true;
             }
 
@@ -520,7 +522,7 @@ class Str
             // pattern such as "library/*", making any string check convenient.
             $pattern = str_replace('\*', '.*', $pattern);
 
-            if (preg_match('#^'.$pattern.'\z#'.($ignoreCase ? 'iu' : 'u'), $value) === 1) {
+            if (preg_match('#^'.$pattern.'\z#'.($ignoreCase ? 'isu' : 'su'), $value) === 1) {
                 return true;
             }
         }
@@ -611,15 +613,42 @@ class Str
      * Determine if a given value is a valid UUID.
      *
      * @param  mixed  $value
+     * @param  int<0, 8>|'max'|null  $version
      * @return bool
      */
-    public static function isUuid($value)
+    public static function isUuid($value, $version = null)
     {
         if (! is_string($value)) {
             return false;
         }
 
-        return preg_match('/^[\da-fA-F]{8}-[\da-fA-F]{4}-[\da-fA-F]{4}-[\da-fA-F]{4}-[\da-fA-F]{12}$/D', $value) > 0;
+        if ($version === null) {
+            return preg_match('/^[\da-fA-F]{8}-[\da-fA-F]{4}-[\da-fA-F]{4}-[\da-fA-F]{4}-[\da-fA-F]{12}$/D', $value) > 0;
+        }
+
+        $factory = new UuidFactory;
+
+        try {
+            $factoryUuid = $factory->fromString($value);
+        } catch (InvalidUuidStringException) {
+            return false;
+        }
+
+        $fields = $factoryUuid->getFields();
+
+        if (! ($fields instanceof FieldsInterface)) {
+            return false;
+        }
+
+        if ($version === 0 || $version === 'nil') {
+            return $fields->isNil();
+        }
+
+        if ($version === 'max') {
+            return $fields->isMax();
+        }
+
+        return $fields->getVersion() === $version;
     }
 
     /**
@@ -1029,8 +1058,10 @@ class Str
                 ']', '|', ':', ';',
             ] : null,
             'spaces' => $spaces === true ? [' '] : null,
-        ]))->filter()->each(fn ($c) => $password->push($c[random_int(0, count($c) - 1)])
-        )->flatten();
+        ]))
+            ->filter()
+            ->each(fn ($c) => $password->push($c[random_int(0, count($c) - 1)]))
+            ->flatten();
 
         $length = $length - $password->count();
 
@@ -1156,7 +1187,7 @@ class Str
     public static function replaceArray($search, $replace, $subject)
     {
         if ($replace instanceof Traversable) {
-            $replace = (new Collection($replace))->all();
+            $replace = Arr::from($replace);
         }
 
         $segments = explode($search, $subject);
@@ -1198,20 +1229,20 @@ class Str
     public static function replace($search, $replace, $subject, $caseSensitive = true)
     {
         if ($search instanceof Traversable) {
-            $search = (new Collection($search))->all();
+            $search = Arr::from($search);
         }
 
         if ($replace instanceof Traversable) {
-            $replace = (new Collection($replace))->all();
+            $replace = Arr::from($replace);
         }
 
         if ($subject instanceof Traversable) {
-            $subject = (new Collection($subject))->all();
+            $subject = Arr::from($subject);
         }
 
         return $caseSensitive
-                ? str_replace($search, $replace, $subject)
-                : str_ireplace($search, $replace, $subject);
+            ? str_replace($search, $replace, $subject)
+            : str_ireplace($search, $replace, $subject);
     }
 
     /**
@@ -1339,12 +1370,12 @@ class Str
     public static function remove($search, $subject, $caseSensitive = true)
     {
         if ($search instanceof Traversable) {
-            $search = (new Collection($search))->all();
+            $search = Arr::from($search);
         }
 
         return $caseSensitive
-                    ? str_replace($search, '', $subject)
-                    : str_ireplace($search, '', $subject);
+            ? str_replace($search, '', $subject)
+            : str_ireplace($search, '', $subject);
     }
 
     /**
@@ -1405,8 +1436,8 @@ class Str
         $parts = explode(' ', $value);
 
         $parts = count($parts) > 1
-            ? array_map([static::class, 'title'], $parts)
-            : array_map([static::class, 'title'], static::ucsplit(implode('_', $parts)));
+            ? array_map(static::title(...), $parts)
+            : array_map(static::title(...), static::ucsplit(implode('_', $parts)));
 
         $collapsed = static::replace(['-', '_', ' '], '_', implode('_', $parts));
 
@@ -1824,8 +1855,8 @@ class Str
     public static function uuid()
     {
         return static::$uuidFactory
-                    ? call_user_func(static::$uuidFactory)
-                    : Uuid::uuid4();
+            ? call_user_func(static::$uuidFactory)
+            : Uuid::uuid4();
     }
 
     /**
@@ -1837,8 +1868,8 @@ class Str
     public static function uuid7($time = null)
     {
         return static::$uuidFactory
-                    ? call_user_func(static::$uuidFactory)
-                    : Uuid::uuid7($time);
+            ? call_user_func(static::$uuidFactory)
+            : Uuid::uuid7($time);
     }
 
     /**

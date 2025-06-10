@@ -96,7 +96,6 @@ class Event
      * @param  \Illuminate\Console\Scheduling\EventMutex  $mutex
      * @param  string  $command
      * @param  \DateTimeZone|string|null  $timezone
-     * @return void
      */
     public function __construct(EventMutex $mutex, $command, $timezone = null)
     {
@@ -387,7 +386,7 @@ class Event
      *
      * @throws \LogicException
      */
-    public function emailOutputTo($addresses, $onlyIfOutputExists = false)
+    public function emailOutputTo($addresses, $onlyIfOutputExists = true)
     {
         $this->ensureOutputIsBeingCaptured();
 
@@ -448,7 +447,7 @@ class Event
      * @param  bool  $onlyIfOutputExists
      * @return void
      */
-    protected function emailOutput(Mailer $mailer, $addresses, $onlyIfOutputExists = false)
+    protected function emailOutput(Mailer $mailer, $addresses, $onlyIfOutputExists = true)
     {
         $text = is_file($this->output) ? file_get_contents($this->output) : '';
 
@@ -743,8 +742,8 @@ class Event
             $output = $this->output && is_file($this->output) ? file_get_contents($this->output) : '';
 
             return $onlyIfOutputExists && empty($output)
-                            ? null
-                            : $container->call($callback, ['output' => new Stringable($output)]);
+                ? null
+                : $container->call($callback, ['output' => new Stringable($output)]);
         };
     }
 
