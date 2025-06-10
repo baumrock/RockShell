@@ -3,10 +3,10 @@
 namespace RockShell;
 
 use Illuminate\Console\Application as ConsoleApplication;
-use Illuminate\Container\Container;
 use Illuminate\Events\Dispatcher;
 
 require_once __DIR__ . "/App/Command.php";
+require_once __DIR__ . "/App/RockShellContainer.php";
 class Application extends ConsoleApplication
 {
 
@@ -31,7 +31,7 @@ class Application extends ConsoleApplication
       $version = json_decode(file_get_contents(__DIR__ . "/package.json"))->version;
     }
     $version .= ' @ PHP' . phpversion();
-    $container = new Container;
+    $container = new RockShellContainer;
     $events = new Dispatcher($container);
     parent::__construct($container, $events, $version);
     $this->setName($name);

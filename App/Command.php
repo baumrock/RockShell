@@ -157,12 +157,19 @@ class Command extends ConsoleCommand
   /**
    * Overwrite the symfony commands execute() method and proxy it to handle()
    */
-  protected function execute(InputInterface $input, OutputInterface $output)
+  protected function execute(InputInterface $input, OutputInterface $output): int
   {
     $this->input = $input;
     $this->output = $output;
     $this->sudo();
-    return $this->handle();
+    $result = $this->handle();
+    
+    // Ensure we return an integer (0 for success, non-zero for error)
+    if (is_int($result)) {
+      return $result;
+    }
+    
+    return 0; // Default to success
   }
 
   /**

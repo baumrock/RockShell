@@ -2,7 +2,9 @@
 
 namespace Illuminate\Support;
 
+use ReflectionAttribute;
 use ReflectionClass;
+use ReflectionEnum;
 use ReflectionMethod;
 use ReflectionNamedType;
 use ReflectionUnionType;
@@ -22,8 +24,7 @@ class Reflector
             return is_callable($var, $syntaxOnly);
         }
 
-        if ((! isset($var[0]) || ! isset($var[1])) ||
-            ! is_string($var[1] ?? null)) {
+        if (! isset($var[0], $var[1]) || ! is_string($var[1] ?? null)) {
             return false;
         }
 
@@ -54,6 +55,46 @@ class Reflector
         }
 
         return false;
+    }
+
+    /**
+     * Get the specified class attribute, optionally following an inheritance chain.
+     *
+     * @template TAttribute of object
+     *
+     * @param  object|class-string  $objectOrClass
+     * @param  class-string<TAttribute>  $attribute
+     * @return TAttribute|null
+     */
+    public static function getClassAttribute($objectOrClass, $attribute, $ascend = false)
+    {
+        return static::getClassAttributes($objectOrClass, $attribute, $ascend)->flatten()->first();
+    }
+
+    /**
+     * Get the specified class attribute(s), optionally following an inheritance chain.
+     *
+     * @template TTarget of object
+     * @template TAttribute of object
+     *
+     * @param  TTarget|class-string<TTarget>  $objectOrClass
+     * @param  class-string<TAttribute>  $attribute
+     * @return ($includeParents is true ? Collection<class-string<contravariant TTarget>, Collection<int, TAttribute>> : Collection<int, TAttribute>)
+     */
+    public static function getClassAttributes($objectOrClass, $attribute, $includeParents = false)
+    {
+        $reflectionClass = new ReflectionClass($objectOrClass);
+
+        $attributes = [];
+
+        do {
+            $attributes[$reflectionClass->name] = new Collection(array_map(
+                fn (ReflectionAttribute $reflectionAttribute) => $reflectionAttribute->newInstance(),
+                $reflectionClass->getAttributes($attribute)
+            ));
+        } while ($includeParents && false !== $reflectionClass = $reflectionClass->getParentClass());
+
+        return $includeParents ? new Collection($attributes) : reset($attributes);
     }
 
     /**
@@ -138,5 +179,33 @@ class Reflector
         return $paramClassName
             && (class_exists($paramClassName) || interface_exists($paramClassName))
             && (new ReflectionClass($paramClassName))->isSubclassOf($className);
+    }
+
+    /**
+     * Determine if the parameter's type is a Backed Enum with a string backing type.
+     *
+     * @param  \ReflectionParameter  $parameter
+     * @return bool
+     */
+    public static function isParameterBackedEnumWithStringBackingType($parameter)
+    {
+        if (! $parameter->getType() instanceof ReflectionNamedType) {
+            return false;
+        }
+
+        $backedEnumClass = $parameter->getType()?->getName();
+
+        if (is_null($backedEnumClass)) {
+            return false;
+        }
+
+        if (enum_exists($backedEnumClass)) {
+            $reflectionBackedEnum = new ReflectionEnum($backedEnumClass);
+
+            return $reflectionBackedEnum->isBacked()
+                && $reflectionBackedEnum->getBackingType()->getName() == 'string';
+        }
+
+        return false;
     }
 }
