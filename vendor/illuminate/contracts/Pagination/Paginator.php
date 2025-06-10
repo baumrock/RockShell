@@ -2,6 +2,11 @@
 
 namespace Illuminate\Contracts\Pagination;
 
+/**
+ * @template TKey of array-key
+ *
+ * @template-covariant TValue
+ */
 interface Paginator
 {
     /**
@@ -15,7 +20,7 @@ interface Paginator
     /**
      * Add a set of query string values to the paginator.
      *
-     * @param  array|string  $key
+     * @param  array|string|null  $key
      * @param  string|null  $value
      * @return $this
      */
@@ -25,7 +30,7 @@ interface Paginator
      * Get / set the URL fragment to be appended to URLs.
      *
      * @param  string|null  $fragment
-     * @return $this|string
+     * @return $this|string|null
      */
     public function fragment($fragment = null);
 
@@ -46,21 +51,21 @@ interface Paginator
     /**
      * Get all of the items being paginated.
      *
-     * @return array
+     * @return array<TKey, TValue>
      */
     public function items();
 
     /**
      * Get the "index" of the first item being paginated.
      *
-     * @return int
+     * @return int|null
      */
     public function firstItem();
 
     /**
      * Get the "index" of the last item being paginated.
      *
-     * @return int
+     * @return int|null
      */
     public function lastItem();
 

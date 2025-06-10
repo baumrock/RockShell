@@ -2,6 +2,9 @@
 
 namespace Illuminate\Contracts\Routing;
 
+/**
+ * @method string query(string $path, array $query = [], mixed $extra = [], bool|null $secure = null)
+ */
 interface UrlGenerator
 {
     /**
@@ -60,6 +63,30 @@ interface UrlGenerator
     public function route($name, $parameters = [], $absolute = true);
 
     /**
+     * Create a signed route URL for a named route.
+     *
+     * @param  string  $name
+     * @param  mixed  $parameters
+     * @param  \DateTimeInterface|\DateInterval|int|null  $expiration
+     * @param  bool  $absolute
+     * @return string
+     *
+     * @throws \InvalidArgumentException
+     */
+    public function signedRoute($name, $parameters = [], $expiration = null, $absolute = true);
+
+    /**
+     * Create a temporary signed route URL for a named route.
+     *
+     * @param  string  $name
+     * @param  \DateTimeInterface|\DateInterval|int  $expiration
+     * @param  array  $parameters
+     * @param  bool  $absolute
+     * @return string
+     */
+    public function temporarySignedRoute($name, $expiration, $parameters = [], $absolute = true);
+
+    /**
      * Get the URL to a controller action.
      *
      * @param  string|array  $action
@@ -68,6 +95,13 @@ interface UrlGenerator
      * @return string
      */
     public function action($action, $parameters = [], $absolute = true);
+
+    /**
+     * Get the root controller namespace.
+     *
+     * @return string
+     */
+    public function getRootControllerNamespace();
 
     /**
      * Set the root controller namespace.

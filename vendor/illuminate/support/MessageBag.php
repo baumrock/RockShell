@@ -7,8 +7,9 @@ use Illuminate\Contracts\Support\Jsonable;
 use Illuminate\Contracts\Support\MessageBag as MessageBagContract;
 use Illuminate\Contracts\Support\MessageProvider;
 use JsonSerializable;
+use Stringable;
 
-class MessageBag implements Jsonable, JsonSerializable, MessageBagContract, MessageProvider
+class MessageBag implements Jsonable, JsonSerializable, MessageBagContract, MessageProvider, Stringable
 {
     /**
      * All of the registered messages.
@@ -139,7 +140,7 @@ class MessageBag implements Jsonable, JsonSerializable, MessageBagContract, Mess
     /**
      * Determine if messages exist for any of the given keys.
      *
-     * @param  array|string  $keys
+     * @param  array|string|null  $keys
      * @return bool
      */
     public function hasAny($keys = [])
@@ -157,6 +158,19 @@ class MessageBag implements Jsonable, JsonSerializable, MessageBagContract, Mess
         }
 
         return false;
+    }
+
+    /**
+     * Determine if messages don't exist for all of the given keys.
+     *
+     * @param  array|string|null  $key
+     * @return bool
+     */
+    public function missing($key)
+    {
+        $keys = is_array($key) ? $key : func_get_args();
+
+        return ! $this->hasAny($keys);
     }
 
     /**
@@ -193,7 +207,7 @@ class MessageBag implements Jsonable, JsonSerializable, MessageBagContract, Mess
             );
         }
 
-        if (Str::contains($key, '*')) {
+        if (str_contains($key, '*')) {
             return $this->getMessagesForWildcardKey($key, $format);
         }
 
@@ -209,15 +223,12 @@ class MessageBag implements Jsonable, JsonSerializable, MessageBagContract, Mess
      */
     protected function getMessagesForWildcardKey($key, $format)
     {
-        return collect($this->messages)
-                ->filter(function ($messages, $messageKey) use ($key) {
-                    return Str::is($key, $messageKey);
-                })
-                ->map(function ($messages, $messageKey) use ($format) {
-                    return $this->transform(
-                        $messages, $this->checkFormat($format), $messageKey
-                    );
-                })->all();
+        return (new Collection($this->messages))
+            ->filter(fn ($messages, $messageKey) => Str::is($key, $messageKey))
+            ->map(function ($messages, $messageKey) use ($format) {
+                return $this->transform($messages, $this->checkFormat($format), $messageKey);
+            })
+            ->all();
     }
 
     /**
@@ -251,6 +262,19 @@ class MessageBag implements Jsonable, JsonSerializable, MessageBagContract, Mess
     }
 
     /**
+     * Remove a message from the message bag.
+     *
+     * @param  string  $key
+     * @return $this
+     */
+    public function forget($key)
+    {
+        unset($this->messages[$key]);
+
+        return $this;
+    }
+
+    /**
      * Format an array of messages.
      *
      * @param  array  $messages
@@ -260,7 +284,11 @@ class MessageBag implements Jsonable, JsonSerializable, MessageBagContract, Mess
      */
     protected function transform($messages, $format, $messageKey)
     {
-        return collect((array) $messages)
+        if ($format == ':message') {
+            return (array) $messages;
+        }
+
+        return (new Collection((array) $messages))
             ->map(function ($message) use ($format, $messageKey) {
                 // We will simply spin through the given messages and transform each one
                 // replacing the :message place holder with the real message allowing
@@ -368,8 +396,7 @@ class MessageBag implements Jsonable, JsonSerializable, MessageBagContract, Mess
      *
      * @return int
      */
-    #[\ReturnTypeWillChange]
-    public function count()
+    public function count(): int
     {
         return count($this->messages, COUNT_RECURSIVE) - count($this->messages);
     }
@@ -389,8 +416,7 @@ class MessageBag implements Jsonable, JsonSerializable, MessageBagContract, Mess
      *
      * @return array
      */
-    #[\ReturnTypeWillChange]
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return $this->toArray();
     }
