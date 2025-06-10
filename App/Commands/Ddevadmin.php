@@ -6,6 +6,7 @@ use Symfony\Component\Console\Input\InputArgument;
 
 class Ddevadmin extends Command
 {
+  use Concerns\RequiresProcessWire;
 
   public function config()
   {
