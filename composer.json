@@ -10,7 +10,11 @@
   "autoload": {
     "files": [
       "Application.php"
-    ]
+    ],
+    "psr-4": {
+      "RockShell\\": "App/",
+      "RockShell\\Concerns\\": "App/Concerns/"
+    }
   },
   "config": {
     "platform": {

@@ -35,6 +35,11 @@ class ComposerStaticInit9436c8305ecc1c29f9d13c239b2e3d81
             'Symfony\\Component\\Console\\' => 26,
             'Symfony\\Component\\BrowserKit\\' => 29,
         ),
+        'R' => 
+        array (
+            'RockShell\\Concerns\\' => 19,
+            'RockShell\\' => 10,
+        ),
         'P' => 
         array (
             'Psr\\Log\\' => 8,
@@ -102,6 +107,14 @@ class ComposerStaticInit9436c8305ecc1c29f9d13c239b2e3d81
         'Symfony\\Component\\BrowserKit\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/browser-kit',
+        ),
+        'RockShell\\Concerns\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/App/Concerns',
+        ),
+        'RockShell\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/App',
         ),
         'Psr\\Log\\' => 
         array (

@@ -20,6 +20,8 @@ return array(
     'Symfony\\Component\\CssSelector\\' => array($vendorDir . '/symfony/css-selector'),
     'Symfony\\Component\\Console\\' => array($vendorDir . '/symfony/console'),
     'Symfony\\Component\\BrowserKit\\' => array($vendorDir . '/symfony/browser-kit'),
+    'RockShell\\Concerns\\' => array($baseDir . '/App/Concerns'),
+    'RockShell\\' => array($baseDir . '/App'),
     'Psr\\Log\\' => array($vendorDir . '/psr/log/src'),
     'Psr\\Container\\' => array($vendorDir . '/psr/container/src'),
     'Masterminds\\' => array($vendorDir . '/masterminds/html5/src'),
