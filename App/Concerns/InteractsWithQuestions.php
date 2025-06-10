@@ -28,7 +28,8 @@ trait InteractsWithQuestions
     protected function choice(string $question, array $choices, $default = null)
     {
         $helper = $this->getHelper('question');
-        $question = new ChoiceQuestion("\n <info>$question</info>", $choices, $default);
+        $defaultText = $default !== null ? " [$default]" : '';
+        $question = new ChoiceQuestion("\n <info>$question</info>$defaultText:", $choices, $default);
         return $helper->ask($this->input, $this->output, $question);
     }
 
@@ -49,7 +50,7 @@ trait InteractsWithQuestions
     protected function askWithCompletion(string $question, array $autocomplete = [], $default = null)
     {
         $helper = $this->getHelper('question');
-        $prompt = $default ? " [<comment>$default</comment>]" : '';
+        $prompt = $default !== null ? " [<comment>$default</comment>]" : '';
         $question = new Question("\n <info>$question</info>$prompt:\n > ", $default);
         if (!empty($autocomplete)) {
             $question->setAutocompleterValues(array_values($autocomplete));

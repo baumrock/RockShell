@@ -78,4 +78,14 @@ trait InteractsWithIO
         $str = $this->str($str);
         $this->output->writeln($str);
     }
+
+    /**
+     * Output a blank line
+     */
+    protected function newLine($count = 1)
+    {
+        for ($i = 0; $i < $count; $i++) {
+            $this->output->writeln('');
+        }
+    }
 }
