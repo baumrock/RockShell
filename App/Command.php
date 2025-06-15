@@ -3,7 +3,7 @@
 namespace RockShell;
 
 use Exception;
-use Illuminate\Console\Command as ConsoleCommand;
+use Symfony\Component\Console\Command\Command as SymfonyCommand;
 use LogicException;
 use ProcessWire\ProcessWire;
 use ProcessWire\User;
@@ -11,14 +11,24 @@ use ReflectionClass;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class Command extends ConsoleCommand
+class Command extends SymfonyCommand
 {
+  use Concerns\InteractsWithIO,
+      Concerns\InteractsWithQuestions,
+      Concerns\CallsCommands,
+      Concerns\HasParameters;
+  // Command return codes
+  const SUCCESS = 0;
+  const FAILURE = 1;
 
   /**
    * Reference to the application
    * @var Application
    */
   public $app;
+
+  /** @var string */
+  protected $name;
 
   /** @var HttpBrowser */
   protected $browser;
@@ -40,7 +50,13 @@ class Command extends ConsoleCommand
     $this->reflect = new ReflectionClass($this); // very first!
     $this->name = $this->name($name);
     parent::__construct($this->name);
-    if (method_exists($this, 'config')) $this->config();
+    
+    // Commands can optionally implement a config() method for setup
+    // @phpstan-ignore-next-line method.notFound
+    if (method_exists($this, 'config')) {
+      /** @var mixed $this */
+      $this->config();
+    }
   }
 
   /**
@@ -157,12 +173,23 @@ class Command extends ConsoleCommand
   /**
    * Overwrite the symfony commands execute() method and proxy it to handle()
    */
-  protected function execute(InputInterface $input, OutputInterface $output)
+  protected function execute(InputInterface $input, OutputInterface $output): int
   {
     $this->input = $input;
     $this->output = $output;
-    $this->sudo();
-    return $this->handle();
+    
+    // Note: ProcessWire initialization moved to wire() method
+    // Only commands that actually call $this->wire() will trigger PW checks
+    // This prevents unnecessary "ProcessWire not installed" alerts for simple commands
+    
+    $result = $this->handle();
+    
+    // Ensure we return an integer (0 for success, non-zero for error)
+    if (is_int($result)) {
+      return $result;
+    }
+    
+    return 0; // Default to success
   }
 
   /**
@@ -311,7 +338,7 @@ class Command extends ConsoleCommand
     extract($vars);
     foreach ($vars as $k => $v) {
       $data = $v;
-      if (is_object($data)) $data = class_basename($data);
+      if (is_object($data)) $data = basename(str_replace('\\', '/', get_class($data)));
       $this->write("  \$$k = $data");
     }
 
@@ -459,7 +486,9 @@ class Command extends ConsoleCommand
    */
   public function sudo(): void
   {
-    if (!$this->wire()) return;
+    // Only set up superuser if ProcessWire is already loaded
+    if (!$this->wire) return;
+    
     // this will create a new superuser at runtime
     // this ensures that we can run rockshell without superusers on the system
     // it also ensures that the user has the default language set which is
@@ -467,7 +496,7 @@ class Command extends ConsoleCommand
     // in non-default languages
     $su = new User();
     $su->addRole("superuser");
-    $this->wire()->users->setCurrentUser($su);
+    $this->wire->users->setCurrentUser($su);
   }
 
   /**
@@ -478,8 +507,8 @@ class Command extends ConsoleCommand
   public function trailingSlash($path)
   {
     return rtrim($this->normalizeSeparators($path), "/") . "/";
-  }
-
+  }  
+  
   /**
    * Get wire instance
    * @return ProcessWire|false
@@ -502,7 +531,12 @@ class Command extends ConsoleCommand
 
     try {
       include 'index.php';
-      return $this->wire = $wire;
+      $this->wire = $wire;
+      
+      // Set up superuser permissions when ProcessWire is successfully loaded
+      $this->sudo();
+      
+      return $this->wire;
     } catch (\Throwable $th) {
       echo $th->getMessage() . "\n";
       return false;
