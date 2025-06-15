@@ -112,10 +112,10 @@ class PwInstall extends Command
       $this->exec("wget --quiet $zip");
       $this->write('Extracting files ...');
       $this->exec('unzip -q site-rockfrontend.zip');
-      $this->nextStep(true, true);
-      return;
+      $this->nextStep(true, true);      return;
     }
 
+    $this->newLine();
     $this->write("Install site profile ...");
 
     $profiles = $this->browser
@@ -175,9 +175,9 @@ class PwInstall extends Command
       $this->browser->submitForm('Continue to Next Step');
     }
   }
-
   public function stepDatabase()
   {
+    $this->newLine();
     $this->write("Setting the following sections:");
     $this->browser->getCrawler()->filter('h2')->each(function (Crawler $el) {
       $this->write("  " . $el->text());
@@ -192,9 +192,7 @@ class PwInstall extends Command
       'debugMode' => 0, // will be enabled in config-local.php
     ]);
     $this->browser->submitForm('Continue', $form->getValues());
-  }
-
-  public function stepAdmin()
+  }  public function stepAdmin()
   {
     $this->write("Setup admin panel and user");
     $form = $this->fillForm([
@@ -412,8 +410,7 @@ class PwInstall extends Command
           'ignore',
         ], 0);
         $this->warn("\ndbTablesAction: $value"); // show always
-        $skipAll = true;
-      } else {
+        $skipAll = true;      } else {
         $value = $this->askWithCompletion($name, $options, $default);
         if ($this->output->isVerbose()) $this->write("$name=$value");
       }
