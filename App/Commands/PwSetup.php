@@ -4,6 +4,7 @@ namespace RockShell;
 
 class PwSetup extends Command
 {
+  use Concerns\RequiresProcessWire;
 
   public function config()
   {
@@ -13,6 +14,8 @@ class PwSetup extends Command
 
   public function handle()
   {
+    $wire = $this->requireProcessWire(); // Get ProcessWire or exit
+
     // add gitignore
     $this->write('Updating .gitignore ...');
     $dst = $this->app->docroot() . ".gitignore";
@@ -29,12 +32,12 @@ class PwSetup extends Command
     }
 
     // add config-local.php
-    $localConfig = $this->wire()->config->paths->site . "config-local.php";
+    $localConfig = $wire->config->paths->site . "config-local.php";
     if (!is_file($localConfig) and $this->confirm("Split config into config.php and config-local.php?", true)) {
       $this->warn('Adding config-local.php ...');
 
       $src = $this->stub('config-local.php');
-      $config = $this->wire()->config;
+      $config = $wire->config;
       $this->stubPopulate($src, $localConfig, [
         'host' => $config->httpHost,
         'userAuthSalt' => $config->userAuthSalt,
@@ -65,9 +68,9 @@ class PwSetup extends Command
       exit(1);
     }
 
-    if (!$this->wire()->modules->isInstalled("RockMigrations")) {
+    if (!$wire->modules->isInstalled("RockMigrations")) {
       $this->warn("You can now install RockMigrations...");
-      $path = $this->wire()->config->paths->root . "site/modules";
+      $path = $wire->config->paths->root . "site/modules";
 
       $this->write("To add it as git submodule in a DDEV setup execute this command:");
       $this->question("git submodule add git@github.com:baumrock/RockMigrations.git site/modules/RockMigrations");
@@ -78,9 +81,9 @@ class PwSetup extends Command
 
       if ($this->confirm("Did you download RockMigrations and want to install it?", true)) {
         $this->write("Refreshing modules...");
-        $this->wire()->modules->refresh();
+        $wire->modules->refresh();
         $this->write("Installing RockMigrations...");
-        $this->wire()->modules->install("RockMigrations");
+        $wire->modules->install("RockMigrations");
       }
     }
 

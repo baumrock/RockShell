@@ -4,6 +4,7 @@ use ProcessWire\User;
 use Symfony\Component\Console\Input\InputOption;
 
 class DbRestore extends Command {
+  use Concerns\RequiresProcessWire;
 
   const backupdir = "/site/assets/backups/database/";
 
@@ -21,7 +22,7 @@ class DbRestore extends Command {
   }
 
   public function handle() {
-    $wire = $this->wire();
+    $wire = $this->requireProcessWire(); // Get ProcessWire or exit
     $file = $this->option("file");
 
     // confirm
