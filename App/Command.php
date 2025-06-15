@@ -17,9 +17,6 @@ class Command extends SymfonyCommand
       Concerns\InteractsWithQuestions,
       Concerns\CallsCommands,
       Concerns\HasParameters;
-  // Command return codes
-  const SUCCESS = 0;
-  const FAILURE = 1;
 
   /**
    * Reference to the application
@@ -51,8 +48,6 @@ class Command extends SymfonyCommand
     $this->name = $this->name($name);
     parent::__construct($this->name);
     
-    // Commands can optionally implement a config() method for setup
-    // @phpstan-ignore-next-line method.notFound
     if (method_exists($this, 'config')) {
       /** @var mixed $this */
       $this->config();
@@ -180,7 +175,7 @@ class Command extends SymfonyCommand
     
     // Note: ProcessWire initialization moved to wire() method
     // Only commands that actually call $this->wire() will trigger PW checks
-    // This prevents unnecessary "ProcessWire not installed" alerts for simple commands
+    // This prevents unnecessary "ProcessWire not installed" alerts for commands as hello, ping, etc.
     
     $result = $this->handle();
     
@@ -338,7 +333,10 @@ class Command extends SymfonyCommand
     extract($vars);
     foreach ($vars as $k => $v) {
       $data = $v;
-      if (is_object($data)) $data = basename(str_replace('\\', '/', get_class($data)));
+      if (is_object($data)) {
+        $reflection = new ReflectionClass($data);
+        $data = $reflection->getShortName();
+      }
       $this->write("  \$$k = $data");
     }
 
@@ -486,7 +484,6 @@ class Command extends SymfonyCommand
    */
   public function sudo(): void
   {
-    // Only set up superuser if ProcessWire is already loaded
     if (!$this->wire) return;
     
     // this will create a new superuser at runtime
@@ -496,7 +493,7 @@ class Command extends SymfonyCommand
     // in non-default languages
     $su = new User();
     $su->addRole("superuser");
-    $this->wire->users->setCurrentUser($su);
+    $this->wire()->users->setCurrentUser($su);
   }
 
   /**
