@@ -18,7 +18,6 @@ use Symfony\Component\Console\Input\InputOption;
 
 class DbPull extends Command
 {
-  use Concerns\RequiresProcessWire;
 
   const backupdir = "/site/assets/backups/database/";
 
@@ -34,7 +33,7 @@ class DbPull extends Command
 
   public function handle()
   {
-    $wire = $this->requireProcessWire(); // Get ProcessWire or exit
+    $wire = $this->wire();
 
     // get remotes from config
     $remotes = $this->getConfig('remotes');

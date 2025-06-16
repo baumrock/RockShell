@@ -6,7 +6,6 @@ use Symfony\Component\Console\Input\InputOption;
 
 class UserRename extends Command
 {
-  use Concerns\RequiresProcessWire;
 
   public function config()
   {
@@ -18,23 +17,21 @@ class UserRename extends Command
 
   public function handle()
   {
-    $wire = $this->requireProcessWire(); // Get ProcessWire or exit
-    
     $users = [];
-    foreach ($wire->users as $u) $users[] = $u->name;
+    foreach ($this->wire()->users as $u) $users[] = $u->name;
 
     if (!$user = $this->option('user')) {
       $user = $this->choice("Select user", $users);
     }
 
     $name = $this->option('name');
-    $name = $wire->sanitizer->pageName($name);
+    $name = $this->wire()->sanitizer->pageName($name);
     while (!$name or in_array($name, $users)) {
       $name = $this->ask("Enter new username");
-      $name = $wire->sanitizer->pageName($name);
+      $name = $this->wire()->sanitizer->pageName($name);
     }
 
-    $user = $wire->users->get("name=$user");
+    $user = $this->wire()->users->get("name=$user");
     $this->success("User {$user->name} renamed to $name");
     $user->setAndSave('name', $name);
 

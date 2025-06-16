@@ -11,7 +11,6 @@ use function ProcessWire\wire;
  */
 class ModuleInstall extends Command
 {
-  use Concerns\RequiresProcessWire;
 
   public function config()
   {
@@ -21,17 +20,15 @@ class ModuleInstall extends Command
 
   public function handle()
   {
-    $wire = $this->requireProcessWire(); // Get ProcessWire or exit
-    
     // check name
     $name = $this->option('name');
     while (!$name) $name = $this->ask("Please enter the module's name");
 
-    $wire->modules->refresh();
+    wire()->modules->refresh();
 
     // special case for RockMigrations
     if ($name == 'RockMigrations') {
-      $rm = $wire->modules->get('RockMigrations');
+      $rm = wire()->modules->get('RockMigrations');
       if (!$rm) {
         $this->error("RockMigrations module not found");
         return self::FAILURE;
@@ -40,7 +37,7 @@ class ModuleInstall extends Command
     }
 
     // load RockMigrations
-    $rm = $wire->modules->get('RockMigrations');
+    $rm = wire()->modules->get('RockMigrations');
     if (!$rm) {
       $this->error("RockMigrations module not found");
       return self::FAILURE;

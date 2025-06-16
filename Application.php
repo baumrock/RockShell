@@ -2,7 +2,9 @@
 
 namespace RockShell;
 
-use Symfony\Component\Console\Application as ConsoleApplication;
+use Illuminate\Console\Application as ConsoleApplication;
+use Illuminate\Container\Container;
+use Illuminate\Events\Dispatcher;
 
 require_once __DIR__ . "/App/Command.php";
 class Application extends ConsoleApplication
@@ -29,7 +31,10 @@ class Application extends ConsoleApplication
       $version = json_decode(file_get_contents(__DIR__ . "/package.json"))->version;
     }
     $version .= ' @ PHP' . phpversion();
-    parent::__construct($name, $version);
+    $container = new Container;
+    $events = new Dispatcher($container);
+    parent::__construct($container, $events, $version);
+    $this->setName($name);
     $this->root = $this->normalizeSeparators(dirname(__DIR__)) . "/";
     $this->docroot =
       rtrim($this->root . (getenv('DDEV_DOCROOT') ?: getenv('ROCKSHELL_DOCROOT')), "/") . "/";

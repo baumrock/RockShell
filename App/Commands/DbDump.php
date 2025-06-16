@@ -8,7 +8,6 @@ use function ProcessWire\wireBytesStr;
 
 class DbDump extends Command
 {
-  use Concerns\RequiresProcessWire;
 
   const backupdir = "/site/assets/backups/database/";
 
@@ -33,7 +32,7 @@ class DbDump extends Command
 
   public function handle()
   {
-    $wire = $this->requireProcessWire(); // Get ProcessWire or exit
+    $wire = $this->wire();
     $file = $this->option("file");
 
     // delete all users except guest
