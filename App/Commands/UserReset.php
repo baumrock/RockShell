@@ -7,6 +7,7 @@ use Symfony\Component\Console\Input\InputOption;
 
 class UserReset extends Command
 {
+  use Concerns\RequiresProcessWire;
 
   public function config()
   {
@@ -19,9 +20,11 @@ class UserReset extends Command
 
   public function handle()
   {
+    $wire = $this->requireProcessWire(); // Get ProcessWire or exit
+
     if (!$user = $this->option('user')) {
       $users = [];
-      foreach ($this->wire()->users as $u) $users[] = $u->name;
+      foreach ($wire->users as $u) $users[] = $u->name;
       $user = $this->choice("Select user", $users);
     }
 
@@ -39,7 +42,7 @@ class UserReset extends Command
       $pass = $this->ask("Enter Password", $pass);
     }
 
-    $user = $this->wire()->users->get("name=$oldname");
+    $user = $wire->users->get("name=$oldname");
     $user->setAndSave('pass', $pass);
     $user->setAndSave('name', $newname);
 
