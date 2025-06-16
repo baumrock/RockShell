@@ -30,7 +30,7 @@ foreach ($headers as $k) {
 }
 
 foreach ($_SERVER as $k => $v) {
-    if (0 === strpos($k, 'HTTP_')) {
+    if (str_starts_with($k, 'HTTP_')) {
         $vars[$k] = $v;
     }
 }
@@ -42,6 +42,7 @@ switch (parse_url($vars['REQUEST_URI'], \PHP_URL_PATH)) {
         exit;
 
     case '/head':
+        header('X-Request-Vars: '.json_encode($vars, \JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE));
         header('Content-Length: '.strlen($json), true);
         break;
 
@@ -198,6 +199,16 @@ switch (parse_url($vars['REQUEST_URI'], \PHP_URL_PATH)) {
         ]);
 
         exit;
+
+    case '/custom':
+        if (isset($_GET['status'])) {
+            http_response_code((int) $_GET['status']);
+        }
+        if (isset($_GET['headers']) && is_array($_GET['headers'])) {
+            foreach ($_GET['headers'] as $header) {
+                header($header);
+            }
+        }
 }
 
 header('Content-Type: application/json', true);
