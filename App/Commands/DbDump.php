@@ -8,8 +8,6 @@ use function ProcessWire\wireBytesStr;
 
 class DbDump extends Command
 {
-  use Concerns\RequiresProcessWire;
-
   const backupdir = "/site/assets/backups/database/";
 
   public function config()

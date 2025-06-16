@@ -18,8 +18,6 @@ use Symfony\Component\Console\Input\InputOption;
 
 class DbDownload extends Command
 {
-  use Concerns\RequiresProcessWire;
-
   const backupdir = "/site/assets/backups/database/";
 
   public function config()

@@ -6,8 +6,6 @@ use Symfony\Component\Console\Input\InputOption;
 
 class UserDelete extends Command
 {
-  use Concerns\RequiresProcessWire;
-
   public function config()
   {
     $this

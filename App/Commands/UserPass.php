@@ -7,8 +7,6 @@ use Symfony\Component\Console\Input\InputOption;
 
 class UserPass extends Command
 {
-  use Concerns\RequiresProcessWire;
-
   public function config()
   {
     $this

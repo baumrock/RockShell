@@ -11,8 +11,6 @@ use function ProcessWire\wire;
  */
 class ModuleInstall extends Command
 {
-  use Concerns\RequiresProcessWire;
-
   public function config()
   {
     $this->setDescription("Install a module")
@@ -22,7 +20,7 @@ class ModuleInstall extends Command
   public function handle()
   {
     $wire = $this->requireProcessWire(); // Get ProcessWire or exit
-    
+
     // check name
     $name = $this->option('name');
     while (!$name) $name = $this->ask("Please enter the module's name");

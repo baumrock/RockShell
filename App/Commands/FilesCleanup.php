@@ -7,8 +7,6 @@ use Symfony\Component\Console\Input\InputOption;
 
 class FilesCleanup extends Command
 {
-  use Concerns\RequiresProcessWire;
-
   public function config()
   {
     $this
@@ -20,7 +18,7 @@ class FilesCleanup extends Command
   public function handle()
   {
     $wire = $this->requireProcessWire(); // Get ProcessWire or exit
-    
+
     $path = $wire->config->paths->files;
     $dir = new DirectoryIterator($path);
 

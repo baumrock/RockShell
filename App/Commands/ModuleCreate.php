@@ -11,8 +11,6 @@ use function ProcessWire\wire;
  */
 class ModuleCreate extends Command
 {
-  use Concerns\RequiresProcessWire;
-
   public function config()
   {
     $this->setDescription("Create a new module with all necessary files")
@@ -71,7 +69,7 @@ class ModuleCreate extends Command
   public function handle()
   {
     $wire = $this->requireProcessWire(); // Get ProcessWire or exit
-    
+
     $types = ['Module', 'Process Module', 'Fieldtype Module', 'Inputfield Module'];
     $type = $this->choice('Type of module', $types, 0);
     if ($type !== 'Module') {

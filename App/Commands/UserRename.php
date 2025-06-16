@@ -6,8 +6,6 @@ use Symfony\Component\Console\Input\InputOption;
 
 class UserRename extends Command
 {
-  use Concerns\RequiresProcessWire;
-
   public function config()
   {
     $this
@@ -19,7 +17,7 @@ class UserRename extends Command
   public function handle()
   {
     $wire = $this->requireProcessWire(); // Get ProcessWire or exit
-    
+
     $users = [];
     foreach ($wire->users as $u) $users[] = $u->name;
 
