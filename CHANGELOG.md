@@ -1,3 +1,10 @@
+## [3.7.0](https://github.com/baumrock/RockShell/compare/v3.6.0...v3.7.0) (2025-06-16)
+
+
+### Features
+
+* add traits for command handling and user interaction ([5ea34af](https://github.com/baumrock/RockShell/commit/5ea34af513ea74243deaf61ca70fa2eecb177a78))
+
 ## [3.6.0](https://github.com/baumrock/RockShell/compare/v3.5.3...v3.6.0) (2025-06-01)
 
 
@@ -31,11 +38,4 @@
 
 * change root property to private ([0205d74](https://github.com/baumrock/RockShell/commit/0205d74292271862c75bcc92fb47792ea5f3497b))
 * wrong double slash in dbpull command ([c58d7e3](https://github.com/baumrock/RockShell/commit/c58d7e3113681fdd3439cfe5e7f9567223633237))
-
-## [3.5.0](https://github.com/baumrock/RockShell/compare/v3.4.1...v3.5.0) (2024-12-09)
-
-
-### Features
-
-* make it possible to install RockMigrations via install command ([8ce5b4f](https://github.com/baumrock/RockShell/commit/8ce5b4f6767fcb00d1ce8499f122c6cad4436e66))
 
