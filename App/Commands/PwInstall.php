@@ -116,6 +116,7 @@ class PwInstall extends Command
       return;
     }
 
+    $this->newLine();
     $this->write("Install site profile ...");
 
     $profiles = $this->browser
@@ -178,6 +179,7 @@ class PwInstall extends Command
 
   public function stepDatabase()
   {
+    $this->newLine();
     $this->write("Setting the following sections:");
     $this->browser->getCrawler()->filter('h2')->each(function (Crawler $el) {
       $this->write("  " . $el->text());
@@ -248,7 +250,8 @@ class PwInstall extends Command
   /**
    * Normalize a URL: remove :443 for https and :80 for http
    */
-  private function normalizeUrl($url) {
+  private function normalizeUrl($url)
+  {
     $parts = parse_url($url);
     if (!$parts || !isset($parts['scheme'], $parts['host'])) return $url;
 
@@ -258,20 +261,21 @@ class PwInstall extends Command
     $path = $parts['path'] ?? '';
 
     $isDefaultPort = ($scheme === 'https' && ($port == 443 || $port === null)) ||
-                     ($scheme === 'http' && ($port == 80 || $port === null));
+      ($scheme === 'http' && ($port == 80 || $port === null));
 
     if (!$isDefaultPort && $port) {
-        return "$scheme://$host:$port$path";
+      return "$scheme://$host:$port$path";
     }
 
     return "$scheme://$host$path";
-}
+  }
 
 
   /**
    * Cleans and normalizes the httpHosts array
    */
-  private function cleanHttpHostsArray($hosts): array {
+  private function cleanHttpHostsArray($hosts): array
+  {
     if (is_string($hosts)) {
       $hosts = preg_split('/[\s,]+/', $hosts);
     }
@@ -515,26 +519,26 @@ class PwInstall extends Command
 
     $urlsToCheck = [];
     if (parse_url($host, PHP_URL_PORT) === null) {  // No port in host
-        if ($httpsPort) $urlsToCheck[] = $this->normalizeUrl("https://$host:$httpsPort");
-        if ($httpPort) $urlsToCheck[] = $this->normalizeUrl("http://$host:$httpPort");
+      if ($httpsPort) $urlsToCheck[] = $this->normalizeUrl("https://$host:$httpsPort");
+      if ($httpPort) $urlsToCheck[] = $this->normalizeUrl("http://$host:$httpPort");
     } else {
-        $urlsToCheck = [
-          $this->normalizeUrl("https://$host"),
-          $this->normalizeUrl("http://$host")
-        ];
+      $urlsToCheck = [
+        $this->normalizeUrl("https://$host"),
+        $this->normalizeUrl("http://$host")
+      ];
     }
 
     foreach ($urlsToCheck as $url) {
       $this->browser->request("GET", $url);
       $status = $this->browser->getInternalResponse()->getStatusCode();
       if ($status === 200) {
-          $this->success("Status check for host $url was OK");
-          return "$url/$site";
+        $this->success("Status check for host $url was OK");
+        return "$url/$site";
       }
       if ($status === 403) {
-          $this->success("Status check for host $url was OK");
-          $this->warn("Access is forbidden (403). This may be expected during installation.");
-          return "$url/$site";
+        $this->success("Status check for host $url was OK");
+        $this->warn("Access is forbidden (403). This may be expected during installation.");
+        return "$url/$site";
       }
     }
 

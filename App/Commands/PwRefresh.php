@@ -4,7 +4,6 @@ namespace RockShell;
 
 class PwRefresh extends Command
 {
-
   public function config()
   {
     $this
@@ -13,7 +12,8 @@ class PwRefresh extends Command
 
   public function handle()
   {
-    $this->wire()->modules->refresh();
+    $wire = $this->requireProcessWire(); // Get ProcessWire or exit
+    $wire->modules->refresh();
     return self::SUCCESS;
   }
 }

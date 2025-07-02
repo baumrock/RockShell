@@ -6,7 +6,6 @@ use Symfony\Component\Console\Input\InputArgument;
 
 class Ddevadmin extends Command
 {
-
   public function config()
   {
     $this->setDescription("Reset superuser name+pwd to ddevadmin");

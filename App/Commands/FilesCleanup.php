@@ -7,7 +7,6 @@ use Symfony\Component\Console\Input\InputOption;
 
 class FilesCleanup extends Command
 {
-
   public function config()
   {
     $this
@@ -18,7 +17,9 @@ class FilesCleanup extends Command
 
   public function handle()
   {
-    $path = $this->wire()->config->paths->files;
+    $wire = $this->requireProcessWire(); // Get ProcessWire or exit
+
+    $path = $wire->config->paths->files;
     $dir = new DirectoryIterator($path);
 
     $this->write($this->option("show"));
@@ -35,10 +36,10 @@ class FilesCleanup extends Command
       if (!$d->isDir()) continue;
       $id = $d->getFilename();
       $folder = $d->getPath() . "/$id";
-      $files = $this->wire()->files->find($folder, [
+      $files = $wire->files->find($folder, [
         'returnRelative' => true,
       ]);
-      $page = $this->wire()->pages->get($id);
+      $page = $wire->pages->get($id);
       if ($page->id) {
         if (!$showExisting) continue;
         $this->success($folder);
@@ -49,7 +50,7 @@ class FilesCleanup extends Command
           $this->write("  " . implode("\n  ", $files));
         }
         if ($delete) {
-          $this->wire()->files->rmdir($folder, true);
+          $wire->files->rmdir($folder, true);
           $this->write("-- deleted --");
         }
         $this->write("");

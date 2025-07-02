@@ -16,13 +16,15 @@ use Symfony\Component\Process\Process;
 
 class TestHttpServer
 {
-    private static $process = [];
+    private static array $process = [];
 
     /**
-     * @return Process
+     * @param string|null $workingDirectory
      */
-    public static function start(int $port = 8057)
+    public static function start(int $port = 8057/* , ?string $workingDirectory = null */): Process
     {
+        $workingDirectory = \func_get_args()[1] ?? __DIR__.'/Fixtures/web';
+
         if (0 > $port) {
             $port = -$port;
             $ip = '[::1]';
@@ -40,7 +42,7 @@ class TestHttpServer
 
         $finder = new PhpExecutableFinder();
         $process = new Process(array_merge([$finder->find(false)], $finder->findArguments(), ['-dopcache.enable=0', '-dvariables_order=EGPCS', '-S', $ip.':'.$port]));
-        $process->setWorkingDirectory(__DIR__.'/Fixtures/web');
+        $process->setWorkingDirectory($workingDirectory);
         $process->start();
         self::$process[$port] = $process;
 

@@ -18,7 +18,6 @@ use Symfony\Component\Console\Input\InputOption;
 
 class DbDownload extends Command
 {
-
   const backupdir = "/site/assets/backups/database/";
 
   public function config()
@@ -32,7 +31,7 @@ class DbDownload extends Command
 
   public function handle()
   {
-    $wire = $this->wire();
+    $wire = $this->requireProcessWire(); // Get ProcessWire or exit
 
     // get remotes from config
     $remotes = $this->getConfig('remotes');
