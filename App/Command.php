@@ -147,6 +147,13 @@ class Command extends SymfonyCommand
     return basename(dirname($this->reflect->getFileName()));
   }
 
+  public function dump(mixed $data, string $method = 'write'): void
+  {
+    if (is_string($data)) $this->{$method}($data);
+    else if (is_array($data)) $this->{$method}(print_r($data, true));
+    else var_dump($data);
+  }
+
   /**
    * Execute php command via php's exec()
    *
