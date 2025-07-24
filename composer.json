@@ -13,7 +13,8 @@
     ],
     "psr-4": {
       "RockShell\\": "App/",
-      "RockShell\\Concerns\\": "App/Concerns/"
+      "RockShell\\Concerns\\": "App/Concerns/",
+      "Env\\": "Env/"
     }
   },
   "config": {
