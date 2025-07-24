@@ -34,6 +34,10 @@ class Env
     ) {
         $this->cacheFile = __DIR__ . '/cache/env.php';
 
+        // make sure the envLocation has a trailing slash
+        // this is to support ::load(__DIR__)
+        $this->envLocation = rtrim(str_replace("\\", "/", $envLocation), "/") . "/";
+
         $this->envData = self::loadEnv();
     }
 
@@ -373,7 +377,7 @@ class Env
         }
 
         // Convert booleans and integers if configured to
-        array_walk($envVars, fn (&$value) => $value = $this->castValue($value));
+        array_walk($envVars, fn(&$value) => $value = $this->castValue($value));
 
         return $envVars;
     }
@@ -438,7 +442,7 @@ class Env
 
         file_put_contents(
             $this->cacheFile,
-            '<?php return '. var_export($envVars, true) . ';' . PHP_EOL
+            '<?php return ' . var_export($envVars, true) . ';' . PHP_EOL
         );
     }
 
