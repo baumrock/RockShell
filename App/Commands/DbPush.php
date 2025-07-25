@@ -32,7 +32,8 @@ class DbPush extends Command
       ->addOption("dbUser", "", InputOption::VALUE_OPTIONAL)
       ->addOption("dbPass", "", InputOption::VALUE_OPTIONAL)
       ->addOption("debug", "d", InputOption::VALUE_NONE)
-      ->addOption("reset", "r", InputOption::VALUE_NONE);
+      ->addOption("reset", "r", InputOption::VALUE_NONE)
+      ->addOption("fast", "f", InputOption::VALUE_NONE);
   }
 
   public function handle()
@@ -97,13 +98,24 @@ class DbPush extends Command
       return self::FAILURE;
     }
 
-    foreach ($tables as $table) {
-      $table = trim($table);
-      $this->write("Dropping table: $table");
-      $cmd = "mysql -u $this->dbUser -p$this->dbPass $this->dbName -e 'DROP TABLE IF EXISTS $table;'";
+    // drop all tables at once or one by one?
+    $fast = $this->option("fast") ?: $this->confirm("Drop all tables at once?", false);
+    if ($fast) {
+      $cmd = '';
+      foreach ($tables as $table) {
+        $table = trim($table);
+        $cmd .= "DROP TABLE IF EXISTS $table;";
+      }
+      $cmd = "mysql -u $this->dbUser -p$this->dbPass $this->dbName -e '$cmd'";
       $this->sshExec($this->remote->ssh, $cmd);
+    } else {
+      foreach ($tables as $table) {
+        $table = trim($table);
+        $this->write("Dropping table: $table");
+        $cmd = "mysql -u $this->dbUser -p$this->dbPass $this->dbName -e 'DROP TABLE IF EXISTS $table;'";
+        $this->sshExec($this->remote->ssh, $cmd);
+      }
     }
-
     return $this->checkEmpty();
   }
 
@@ -120,9 +132,15 @@ class DbPush extends Command
   {
     // ask for db credentials
     $this->warn("Setting up connection to the remote database");
-    $this->dbName = $this->option("dbName") ?: $this->ask("Enter the database name");
-    $this->dbUser = $this->option("dbUser") ?: $this->ask("Enter the database user", $this->dbName);
-    $this->dbPass = $this->option("dbPass") ?: $this->ask("Enter the database password");
+    $this->dbName = $this->option("dbName")
+      ?: $this->remote->dbName
+      ?: $this->ask("Enter the database name");
+    $this->dbUser = $this->option("dbUser")
+      ?: $this->remote->dbUser
+      ?: $this->ask("Enter the database user", $this->dbName);
+    $this->dbPass = $this->option("dbPass")
+      ?: $this->remote->dbPass
+      ?: $this->ask("Enter the database password");
     $this->success("Database credentials set");
     return $this->testConnection();
   }
