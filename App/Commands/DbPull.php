@@ -25,7 +25,6 @@ class DbPull extends Command
     $this
       ->setDescription("Pull a database dump from remote server")
       ->addArgument("remote",         InputArgument::OPTIONAL)
-      ->addOption("list",       "l",  InputOption::VALUE_NONE,      "List remotes")
       ->addOption("keep",       "k",  InputOption::VALUE_NONE,      "Keep tmp.sql after restore")
       ->addOption("php",        "p",  InputOption::VALUE_OPTIONAL,  "PHP command to use, eg keyhelp-php81");
   }
@@ -33,35 +32,7 @@ class DbPull extends Command
   public function handle()
   {
     $wire = $this->requireProcessWire(); // Get ProcessWire or exit
-
-    // get remotes from config
-    $remotes = $this->getConfig('remotes');
-    if (!$remotes or !count($remotes)) {
-      $this->error("No remotes defined in \$config->rockshell['remotes'] - see DbPull.php for help");
-      return self::FAILURE;
-    }
-
-    if ($this->option("list")) {
-      $this->info("Available remotes:");
-      $this->write($remotes);
-    }
-
-    // if remote is not specified and we only have one remote
-    // we take that one to pull from
-    if (!$this->argument("remote") and count($remotes) === 1) {
-      foreach ($remotes as $remote) {
-        $remote = (object)$remote;
-      }
-    } else {
-      $remoteName = $this->argument("remote") ?: $this->choice("Choose remote", array_keys($remotes));
-      if ($remoteName === 'p' && array_key_exists('production', $remotes)) {
-        $remoteName = 'production';
-      }
-      if ($remoteName === 's' && array_key_exists('staging', $remotes)) {
-        $remoteName = 'staging';
-      }
-      $remote = (object)$remotes[$remoteName];
-    }
+    $remote = $this->getRemote();
 
     $ssh = $remote->ssh;
     $dir = rtrim($remote->dir, "/");

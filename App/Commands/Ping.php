@@ -11,17 +11,12 @@ class Ping extends Command
 
   public function config()
   {
-    $this->setDescription("Outputs 'pong' in different styles");
+    $this->setDescription("Executes a ping command to processwire.com");
   }
 
   public function handle()
   {
-    $this->output->writeln("pong: writeln()");
-    $this->write("pong: write()"); // shortcut of above
-    $this->info("pong: info()");
-    $this->error("pong: error()");
-    $this->comment("pong: comment()");
-    $this->question("pong: question()");
+    $this->system("ping -c 4 processwire.com");
     return self::SUCCESS;
   }
 }

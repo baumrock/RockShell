@@ -8,6 +8,7 @@ use LogicException;
 use ProcessWire\ProcessWire;
 use ProcessWire\User;
 use ReflectionClass;
+use stdClass;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -147,6 +148,35 @@ class Command extends SymfonyCommand
     return basename(dirname($this->reflect->getFileName()));
   }
 
+  /**
+   * Disable output buffering (for direct streaming)
+   * @return void
+   */
+  private function disableOB()
+  {
+    // Turn off output buffering
+    ini_set('output_buffering', 'off');
+    // Turn off PHP output compression
+    ini_set('zlib.output_compression', false);
+    // Implicitly flush the buffer(s)
+    ini_set('implicit_flush', true);
+    ob_implicit_flush(true);
+    // Clear, and turn off output buffering
+    while (ob_get_level() > 0) {
+      // Get the curent level
+      $level = ob_get_level();
+      // End the buffering
+      ob_end_clean();
+      // If the current level has not changed, abort
+      if (ob_get_level() == $level) break;
+    }
+    // Disable apache output buffering/compression
+    if (function_exists('apache_setenv')) {
+      apache_setenv('no-gzip', '1');
+      apache_setenv('dont-vary', '1');
+    }
+  }
+
   public function dump(mixed $data, string $method = 'write'): void
   {
     if (is_string($data)) $this->{$method}($data);
@@ -220,6 +250,39 @@ class Command extends SymfonyCommand
       }
     }
     return $config;
+  }
+
+  /**
+   * Helper to outsorce getting the remote for some commands
+   * @return stdClass|false
+   */
+  public function getRemote(): stdClass|false
+  {
+    // get remotes from config
+    $remotes = $this->getConfig('remotes');
+    if (!$remotes or !count($remotes)) {
+      $this->error("No remotes defined in \$config->rockshell['remotes'] - see DbPull.php for help");
+      return false;
+    }
+
+    // if remote is not specified and we only have one remote
+    // we take that one to pull from
+    if (!$this->argument("remote") and count($remotes) === 1) {
+      foreach ($remotes as $remote) {
+        $remote = (object)$remote;
+      }
+    } else {
+      $remoteName = $this->argument("remote") ?: $this->choice("Choose remote", array_keys($remotes));
+      if ($remoteName === 'p' && array_key_exists('production', $remotes)) {
+        $remoteName = 'production';
+      }
+      if ($remoteName === 's' && array_key_exists('staging', $remotes)) {
+        $remoteName = 'staging';
+      }
+      $remote = (object)$remotes[$remoteName];
+    }
+
+    return $remote;
   }
 
   public function goodbye(): void
@@ -412,13 +475,12 @@ class Command extends SymfonyCommand
 
   /**
    * Execute command on remote via ssh
-   * @return void
    */
   public function sshExec($ssh, $cmd, $echo = false)
   {
     $cmd = str_replace("\n", " && ", $cmd);
     if ($echo) $this->write($cmd);
-    $this->exec("ssh $ssh \"$cmd\"");
+    return $this->exec("ssh $ssh \"$cmd\"", $echo);
   }
 
   /**
@@ -502,6 +564,21 @@ class Command extends SymfonyCommand
     $su = new User();
     $su->addRole("superuser");
     $this->wire()->users->setCurrentUser($su);
+  }
+
+  /**
+   * Execute a command and disable output buffering for direct streaming
+   *
+   * Example:
+   * $this->system("ping -c 4 processwire.com");
+   *
+   * @param mixed $cmd
+   * @return void
+   */
+  public function system($cmd): void
+  {
+    $this->disableOB();
+    system($cmd);
   }
 
   /**
