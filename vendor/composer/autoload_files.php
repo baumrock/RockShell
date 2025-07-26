@@ -14,4 +14,5 @@ return array(
     'f598d06aa772fa33d905e87be6398fb1' => $vendorDir . '/symfony/polyfill-intl-idn/bootstrap.php',
     'b6b991a57620e2fb6b2f66f03fe9ddc2' => $vendorDir . '/symfony/string/Resources/functions.php',
     'cca37c0de989e5d74439de7bf5463a5b' => $baseDir . '/Application.php',
+    '2df4bc7853a6f7bd92a86d80d53164a1' => $baseDir . '/Deployment.php',
 );
