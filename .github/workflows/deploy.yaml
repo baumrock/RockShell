@@ -1,0 +1,225 @@
+name: RockShell Deploy
+
+on:
+  workflow_call:
+    inputs:
+      ENVIRONMENT:
+        required: true
+        type: string
+    secrets:
+      SSH_KEY:
+        required: true
+      CI_TOKEN:
+        required: false
+
+env:
+  SSH_PORT: ${{ vars.SSH_PORT || 22 }}
+  DRY: ${{ vars.DRY }}
+  SUBMODULES: ${{ vars.SUBMODULES == 'true' }}
+  BRANCH: ${GITHUB_REF##*/}
+  SSH_USER: ${{ vars.SSH_USER }}
+  SSH_HOST: ${{ vars.SSH_HOST }}
+  KNOWN_HOSTS: ${{ vars.KNOWN_HOSTS }}
+  DEPLOY_SRC: ${{ vars.DEPLOY_SRC || '/' }}
+  DEPLOY_DST: ${{ vars.DEPLOY_DST }}
+  RSYNC: ${{ vars.RSYNC }}
+  DELAY: ${{ vars.DELAY || 0 }}
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.ENVIRONMENT }}
+    steps:
+      - name: 🛠 Setup Variables
+        id: setupvars
+        run: |
+
+          # Setup variables
+          HAS_ERRORS=false
+
+          echo "✅ ENVIRONMENT:    ${{ inputs.ENVIRONMENT }}"
+          echo "✅ BRANCH:         ${{ env.BRANCH }}"
+          echo "✅ DRY:            ${{ env.DRY }}"
+          echo "✅ SUBMODULES:     ${{ env.SUBMODULES }}"
+
+          SHORT_SHA=$(echo ${GITHUB_SHA} | cut -c1-8)
+          CURRENT_DATE=$(date +%Y%m%d%H%M%S)
+          DEPLOY_NAME=tmp-release-$CURRENT_DATE-$SHORT_SHA
+          echo "DEPLOY_NAME=$DEPLOY_NAME" >> $GITHUB_OUTPUT
+          echo "✅ DEPLOY_NAME:    $DEPLOY_NAME"
+
+          if [ "$SUBMODULES" = "true" ]; then
+            if [ -z "${{ secrets.CI_TOKEN }}" ]; then
+              echo "❌ CI_TOKEN:       secret is empty"
+              HAS_ERRORS=true
+            else
+              echo "✅ CI_TOKEN:       secret exists"
+            fi
+          fi
+
+          echo "✅ DELAY:          ${{ env.DELAY }} minutes"
+          CURRENT_TS=$(date +%s)
+          WAIT_UNTIL=$((CURRENT_TS + ${{ env.DELAY }} * 60))
+          echo "WAIT_UNTIL=$WAIT_UNTIL" >> $GITHUB_OUTPUT
+
+          echo "-----"
+
+          if [ -z "${{ env.SSH_USER }}" ]; then
+            echo "❌ SSH_USER:       variable is empty"
+            HAS_ERRORS=true
+          else
+            echo "✅ SSH_USER:       ${{ env.SSH_USER }}"
+          fi
+
+          if [ -z "${{ env.SSH_HOST }}" ]; then
+            echo "❌ SSH_HOST:       variable is empty"
+            HAS_ERRORS=true
+          else
+            echo "✅ SSH_HOST:       ${{ env.SSH_HOST }}"
+          fi
+
+          echo "✅ SSH_PORT:       ${{ env.SSH_PORT }}"
+
+          if [ -n "${{ env.KNOWN_HOSTS }}" ]; then
+            echo "✅ KNOWN_HOSTS:    exists"
+          else
+            echo "❌ KNOWN_HOSTS:    variable is empty"
+            HAS_ERRORS=true
+          fi
+
+          echo "-----"
+
+          echo "✅ DEPLOY_SRC:     ${{ env.DEPLOY_SRC }}"
+
+          DEPLOY_DST=${{ env.DEPLOY_DST }}
+          if [[ "$DEPLOY_DST" == */ ]]; then
+            echo "⚠️ DEPLOY_DST:     trailing slash removed"
+            DEPLOY_DST=${DEPLOY_DST%/}
+          fi
+          echo "DEPLOY_DST=$DEPLOY_DST" >> $GITHUB_OUTPUT
+          if [ -z "$DEPLOY_DST" ]; then
+            echo "❌ DEPLOY_DST:     variable is empty"
+            HAS_ERRORS=true
+          else
+            echo "✅ DEPLOY_DST:     $DEPLOY_DST"
+          fi
+
+          echo "✅ RSYNC:          ${{ env.RSYNC }}"
+
+          echo "-----"
+
+          if [ "$HAS_ERRORS" = true ]; then
+            exit 1
+          else
+            echo "✅ All required variables are set"
+          fi
+
+          if [ "${{ env.DRY }}" = true ]; then
+            echo "⚠️ DRY run - skipping deployment"
+          fi
+          echo "DRY=$DRY" >> $GITHUB_OUTPUT
+    outputs:
+      DEPLOY_NAME: ${{ steps.setupvars.outputs.DEPLOY_NAME }}
+      DEPLOY_DST: ${{ steps.setupvars.outputs.DEPLOY_DST }}
+      DRY: ${{ steps.setupvars.outputs.DRY }}
+      WAIT_UNTIL: ${{ steps.setupvars.outputs.WAIT_UNTIL }}
+
+  check-ssh:
+    runs-on: ubuntu-latest
+    needs: [setup]
+    steps:
+      - name: 🕵 Check SSH Connection
+        run: |
+
+          # Setup SSH
+          install -m 600 -D /dev/null ~/.ssh/id_rsa
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
+          echo "${{ env.KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+
+          # Create SSH function
+          sshExec() {
+            ssh ${{ env.SSH_USER }}@${{ env.SSH_HOST }} -p${{ env.SSH_PORT }} "$@"
+          }
+
+          # Check connection to the server
+          sshExec "echo '✅ Connection successful'"
+
+          # Check if the deploy directory exists
+          sshExec \
+            "if [ ! -d ${{ needs.setup.outputs.DEPLOY_DST }} ]; then
+              echo '❌ DEPLOY_DST: directory does not exist'
+              exit 1
+            else
+              echo '✅ directory ${{ needs.setup.outputs.DEPLOY_DST }} exists'
+            fi"
+
+  rsync:
+    runs-on: ubuntu-latest
+    needs: [setup, check-ssh]
+    if: needs.setup.outputs.DRY == 'false'
+    steps:
+      - name: 🕵 Setup SSH
+        run: |
+
+          # Setup SSH
+          install -m 600 -D /dev/null ~/.ssh/id_rsa
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
+          echo "${{ env.KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+
+      - name: 🚩 Set deployment flag
+        run: |
+
+          # write WAIT_UNTIL to the deploying file
+          DST=${{ needs.setup.outputs.DEPLOY_DST }}
+          UNTIL=${{ needs.setup.outputs.WAIT_UNTIL }}
+          ssh ${{ env.SSH_USER }}@${{ env.SSH_HOST }} -p${{ env.SSH_PORT }} \
+            "touch $DST/deploying && echo $UNTIL > $DST/deploying"
+
+          if [ "${{ env.DELAY }}" -gt 0 ]; then
+            UNTIL_HUMAN=$(date -d "@$UNTIL" +%Y-%m-%d\ %H:%M:%S)
+            echo "✅ Deployment will start after $UNTIL_HUMAN"
+          fi
+
+      - name: 🚛 Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: ${{ env.SUBMODULES }}
+          token: ${{ secrets.CI_TOKEN }}
+
+      - name: 📋 List files in DEPLOY_SRC
+        run: ls ${{ github.workspace }}${{ env.DEPLOY_SRC }}
+
+      - name: 🚚 Deploy via RSYNC and Set Permissions
+        run: |
+
+          # prepare variables
+          FROM=${{ github.workspace }}${{ env.DEPLOY_SRC }}
+          DST=${{ needs.setup.outputs.DEPLOY_DST }}
+          NAME=${{ needs.setup.outputs.DEPLOY_NAME }}
+          TO=${{ env.SSH_USER }}@${{ env.SSH_HOST }}:$DST/$NAME
+
+          # rsync the files to the server
+          rsync -avz --chmod=D755,F644 --exclude '.git' \
+            ${{ env.RSYNC }} \
+            -e "ssh -p${{ env.SSH_PORT }}" \
+            $FROM $TO
+
+  php:
+    needs: [rsync, setup]
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.ENVIRONMENT }}
+    steps:
+      - name: 🐘 Execute PHP Deployment Script
+        run: |
+
+          # Setup SSH
+          install -m 600 -D /dev/null ~/.ssh/id_rsa
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
+          echo "${{ env.KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+
+          # execute the deployment script
+          ssh ${{ env.SSH_USER }}@${{ env.SSH_HOST }} -p${{ env.SSH_PORT }} \
+            "php ${{ needs.setup.outputs.DEPLOY_DST }}/${{ needs.setup.outputs.DEPLOY_NAME }}/RockShell/deploy.php "
+
+          # NOTE: deployment flag is removed by the script
+          # this is to support WAIT_UNTIL feature

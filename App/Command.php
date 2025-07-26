@@ -526,11 +526,16 @@ class Command extends SymfonyCommand
     $quiet = false,
     $brackets = "{}"
   ) {
+    if (!str_starts_with($src, '/')) $src = $this->stub($src);
     $src = realpath($src);
+    if (!file_exists($src)) {
+      $this->error("Stub file $src does not exist");
+      return;
+    }
     $content = file_get_contents($src);
     if (!$quiet) {
       $this->write("Writing $src");
-      $this->write("  to $dst");
+      $this->write("     to $dst");
     }
     $left = @$brackets[0];
     $right = @$brackets[1];
