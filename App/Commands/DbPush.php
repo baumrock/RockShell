@@ -141,6 +141,9 @@ class DbPush extends Command
     $this->dbPass = $this->option("dbPass")
       ?: $this->remote->dbPass
       ?: $this->ask("Enter the database password");
+    $this->write("  dbName: $this->dbName");
+    $this->write("  dbUser: $this->dbUser");
+    $this->write("  dbPass: ***");
     $this->success("Database credentials set");
     return $this->testConnection();
   }

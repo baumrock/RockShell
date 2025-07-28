@@ -219,7 +219,7 @@ class PwInstall extends Command
   public function stepReloadAdmin($notice = true)
   {
     if ($notice) $this->info("\nLoading ProcessWire ...");
-    chdir($this->app->docroot());
+    chdir($this->app->wireRoot());
     include "index.php";
     /** @var ProcessWire $wire */
     $url = $this->host($wire->pages->get(2)->url);
@@ -468,7 +468,7 @@ class PwInstall extends Command
     $h1 = $h1->count() ? $h1->outerHtml() : '';
     if ($h1 !== '<h1 class="uk-margin-remove-top">ProcessWire 3.x Installer</h1>') {
       $this->write('No ProcessWire Installer found');
-      if (is_file($this->app->docroot() . "index.php")) {
+      if (is_file($this->app->wireRoot() . "index.php")) {
         $this->write("");
         $this->error("Found index.php - aborting ...");
         $this->write("");

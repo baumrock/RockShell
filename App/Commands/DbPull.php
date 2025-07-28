@@ -31,26 +31,28 @@ class DbPull extends Command
 
   public function handle()
   {
-    $wire = $this->requireProcessWire(); // Get ProcessWire or exit
+    $wire = $this->requireProcessWire();
     $remote = $this->getRemote();
+    $localWireRoot = rtrim($wire->config->paths->root, "/");
 
     $ssh = $remote->ssh;
-    $dir = rtrim($remote->dir, "/");
     $folder = trim(DbDump::backupdir, "/");
 
     $this->write("Creating remote dump...");
     $php = $this->option('php') ?: $this->getConfig('remotePHP') ?: 'php';
     $cmd = "$php RockShell/rock db:dump -f tmp.sql";
 
-    $this->write("  Remote path: $dir");
+    $this->write("  Remote rootPath: $remote->rootPath");
+    $this->write("  Remote wireRoot: $remote->wireRoot");
     $this->write("  Remote command: $cmd");
-    $this->sshExec($ssh, "cd $dir && $cmd");
+    $this->sshExec($ssh, "cd $remote->rootPath && $cmd");
 
     $this->write("Copying dump to local...");
-    $this->exec("scp $ssh:$dir/$folder/tmp.sql {$wire->config->paths->root}$folder/tmp.sql");
+    $localDump = "{$localWireRoot}/$folder/tmp.sql";
+    $this->exec("scp $ssh:{$remote->wireRoot}/$folder/tmp.sql $localDump");
 
     $this->write("Removing remote dump...");
-    $this->sshExec($ssh, "cd $dir && rm -rf $dir/$folder/tmp.sql");
+    $this->sshExec($ssh, "rm -rf {$remote->wireRoot}/$folder/tmp.sql");
 
     $this->call("db:restore", [
       '--y' => true,
@@ -59,7 +61,7 @@ class DbPull extends Command
 
     if (!$this->option('keep')) {
       $this->write("Removing tmp.sql...");
-      $this->exec("rm $folder/tmp.sql", false);
+      $this->exec("rm $localDump", false);
       $this->info("Done");
     } else {
       $this->write("Saved dump to tmp.sql");

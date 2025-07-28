@@ -14,7 +14,10 @@ trait RequiresProcessWire
     {
         $wire = $this->wire();
         if (!$wire) {
-            $this->error("ProcessWire not found or not installed. Please run this command from an installed ProcessWire directory.");
+            $this->error("ProcessWire not found or not installed.");
+            $this->write("Please run this command from an installed ProcessWire directory.");
+            $this->write("Project Root: " . $this->app->rootPath());
+            $this->write("ProcessWire Root: " . $this->app->wireRoot());
             exit(1); // Failure exit code
         }
         return $wire;

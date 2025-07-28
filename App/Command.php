@@ -269,7 +269,7 @@ class Command extends SymfonyCommand
     // we take that one to pull from
     if (!$this->argument("remote") and count($remotes) === 1) {
       foreach ($remotes as $remote) {
-        $remote = (object)$remote;
+        $remote = $remote;
       }
     } else {
       $remoteName = $this->argument("remote") ?: $this->choice("Choose remote", array_keys($remotes));
@@ -279,7 +279,26 @@ class Command extends SymfonyCommand
       if ($remoteName === 's' && array_key_exists('staging', $remotes)) {
         $remoteName = 'staging';
       }
-      $remote = (object)$remotes[$remoteName];
+      $remote = $remotes[$remoteName];
+    }
+
+    // make sure that rootPath and wireRoot properties are available
+    $remote = (object)[
+      'rootPath' => null,
+      'wireRoot' => null,
+      ...$remote,
+    ];
+
+    // sanitize paths
+    $rootPath = $this->normalizeSeparators($remote->rootPath);
+    $rootPath = rtrim($rootPath, "/");
+    $remote->rootPath = $rootPath;
+
+    if (!$remote->wireRoot) $remote->wireRoot = $remote->rootPath;
+    else {
+      $wireRoot = $this->normalizeSeparators($remote->wireRoot);
+      $wireRoot = rtrim($wireRoot, "/");
+      $remote->wireRoot = $wireRoot;
     }
 
     return $remote;
@@ -604,7 +623,7 @@ class Command extends SymfonyCommand
   {
     if ($this->wire) return $this->wire;
     if ($this->wire === false) return;
-    chdir($this->app->docroot());
+    chdir($this->app->wireRoot());
 
     // pw is not yet there, eg when using pw:install
     if (!is_file("index.php")) return false;

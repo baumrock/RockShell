@@ -14,14 +14,19 @@ class Application extends ConsoleApplication
    */
   private $context = [];
 
-  private $docroot;
+  /**
+   * Path to ProcessWire root folder
+   * Use ->wireRoot() to access it
+   * @var string
+   */
+  private $wireRoot;
 
   /**
    * Path to root folder of the project having a trailing slash
    * Use ->rootPath() to access it
-   * @var string $root
+   * @var string $rootPath
    */
-  private $root;
+  private $rootPath;
 
   public function __construct($name = "RockShell", $version = null)
   {
@@ -30,9 +35,15 @@ class Application extends ConsoleApplication
     }
     $version .= ' @ PHP' . phpversion();
     parent::__construct($name, $version);
-    $this->root = $this->normalizeSeparators(dirname(__DIR__)) . "/";
-    $this->docroot =
-      rtrim($this->root . (getenv('DDEV_DOCROOT') ?: getenv('ROCKSHELL_DOCROOT')), "/") . "/";
+    $this->rootPath = $this->normalizeSeparators(dirname(__DIR__)) . "/";
+
+    $path = getenv('DDEV_DOCROOT') ?: getenv('ROCKSHELL_DOCROOT');
+    $this->wireRoot = rtrim($this->rootPath . $path, "/") . "/";
+
+    // if folder wireRoot/public/wire exists we use the /public folder as docroot
+    if (is_dir($this->wireRoot . "public/wire")) {
+      $this->wireRoot = $this->wireRoot . "public/";
+    }
   }
 
   /**
@@ -44,7 +55,7 @@ class Application extends ConsoleApplication
     if (!is_file($file)) return;
     require_once($file);
     $name = pathinfo($file, PATHINFO_FILENAME);
-    $root = $this->root . "RockShell/App/Commands/";
+    $root = $this->rootPath . "RockShell/App/Commands/";
     if (strpos($file, $root) === 0) {
       $namespace = "\RockShell";
     } else {
@@ -74,9 +85,9 @@ class Application extends ConsoleApplication
     $this->context[$name] = $data;
   }
 
-  public function docroot()
+  public function wireRoot()
   {
-    return $this->docroot;
+    return $this->wireRoot;
   }
 
   /**
@@ -94,9 +105,9 @@ class Application extends ConsoleApplication
   public function findCommandFiles()
   {
     $roots = [
-      $this->root . "RockShell/App/",
-      $this->docroot . "site/modules",
-      $this->docroot . "site/assets",
+      $this->rootPath . "RockShell/App/",
+      $this->wireRoot . "site/modules",
+      $this->wireRoot . "site/assets",
     ];
     $files = array();
     foreach ($roots as $root) {
@@ -158,6 +169,6 @@ class Application extends ConsoleApplication
    */
   public function rootPath()
   {
-    return $this->root;
+    return $this->rootPath;
   }
 }

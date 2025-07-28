@@ -4,6 +4,9 @@ namespace RockShell;
 
 /**
  * Create a CI workflow for a project
+ *
+ * Usage:
+ * rockshell ci:create
  */
 class CiCreate extends Command
 {
@@ -17,19 +20,14 @@ class CiCreate extends Command
   {
     $this->write($this->app->rootPath());
 
-    $envName = $this->ask("Environment name", "STAGING");
-    $workflowName = $this->ask("Workflow name", "Deploy to $envName");
-    $branchName = $this->ask("Branch name", "dev");
-    $useVersion = $this->ask("Deployment Version", "dev");
-
+    $environment = $this->ask("Environment name", "STAGING");
+    $branchname = $this->ask("Branch name", "dev");
     $this->stubPopulate(
       src: "workflow.txt",
-      dst: $this->app->rootPath() . ".github/workflows/$envName.yaml",
+      dst: $this->app->rootPath() . ".github/workflows/$environment.yaml",
       vars: [
-        "workflowname" => $workflowName,
-        "branchname" => $branchName,
-        "useversion" => $useVersion,
-        "environment" => $envName,
+        "environment" => $environment,
+        "branchname" => $branchname,
       ],
     );
     return self::SUCCESS;
