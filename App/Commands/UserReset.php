@@ -13,7 +13,8 @@ class UserReset extends Command
       ->setDescription("Reset username and password")
       ->addOption("user", "u", InputOption::VALUE_OPTIONAL, "old username")
       ->addOption("pass", "p", InputOption::VALUE_OPTIONAL, "new password")
-      ->addOption("name", "x", InputOption::VALUE_OPTIONAL, "new name");
+      ->addOption("name", "x", InputOption::VALUE_OPTIONAL, "new name")
+      ->addOption("email", "e", InputOption::VALUE_NONE, "select by email");
   }
 
   public function handle()
@@ -22,11 +23,22 @@ class UserReset extends Command
 
     if (!$user = $this->option('user')) {
       $users = [];
-      foreach ($wire->users as $u) $users[] = $u->name;
-      $user = $this->choice("Select user", $users);
+      if ($this->option('email')) {
+        $names = [];
+        foreach ($wire->users as $u) {
+          if (!$u->email) continue;
+          $users[] = $u->email;
+          $names[$u->email] = $u->name;
+        }
+        $user = $this->choice("Select user", $users);
+        $oldname = $names[$user];
+      } else {
+        foreach ($wire->users as $u) $users[] = $u->name;
+        $user = $this->choice("Select user (use --email to select by email)", $users);
+        $oldname = $user;
+      }
     }
 
-    $oldname = $user;
     if (!$newname = $this->option('name')) {
       $newname = $this->ask("Enter new name", $oldname);
     }
