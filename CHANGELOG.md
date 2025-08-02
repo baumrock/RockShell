@@ -1,3 +1,16 @@
+## [3.8.0](https://github.com/baumrock/RockShell/compare/v3.7.0...v3.8.0) (2025-08-02)
+
+
+### Features
+
+* add --email option for user reset command ([de882cd](https://github.com/baumrock/RockShell/commit/de882cdf7695c6bf4b43b953504606769f8f0ce1))
+* add --fast option for db:push ([d4b1502](https://github.com/baumrock/RockShell/commit/d4b1502deb26b5b05f02222b9557b0f2b790eec1))
+* add basic support for deployments ([8bd2d07](https://github.com/baumrock/RockShell/commit/8bd2d0759dcd612b6d406ae7bd95011f36e4dc6a))
+* add db:push command ([6a53b93](https://github.com/baumrock/RockShell/commit/6a53b93411b8703ed6bd065fb16ca750963616ca))
+* add debug command ([494c22b](https://github.com/baumrock/RockShell/commit/494c22b4f2811ca9bb3ba47388a816f0b31c6175))
+* add dump method to base command ([5b7dc5d](https://github.com/baumrock/RockShell/commit/5b7dc5ddb6f52dabe814ba8cdc5105d19cacabf1))
+* add support for deployments ([8f6ded1](https://github.com/baumrock/RockShell/commit/8f6ded16f48e016c5b765a71f8b28b9ffaac9799))
+
 ## [3.7.0](https://github.com/baumrock/RockShell/compare/v3.6.0...v3.7.0) (2025-07-02)
 
 
@@ -30,12 +43,4 @@
 ### Bug Fixes
 
 * security update of dependencies ([0788ac2](https://github.com/baumrock/RockShell/commit/0788ac271e42cded79fd3068ec492d782ab8d7ed))
-
-## [3.5.1](https://github.com/baumrock/RockShell/compare/v3.5.0...v3.5.1) (2025-01-11)
-
-
-### Bug Fixes
-
-* change root property to private ([0205d74](https://github.com/baumrock/RockShell/commit/0205d74292271862c75bcc92fb47792ea5f3497b))
-* wrong double slash in dbpull command ([c58d7e3](https://github.com/baumrock/RockShell/commit/c58d7e3113681fdd3439cfe5e7f9567223633237))
 
