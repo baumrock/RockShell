@@ -44,7 +44,7 @@ class DbDump extends Command
     }
 
     // backup to setup.sql
-    $this->write("Dumping database...");
+    $this->write("Dumping database ...");
     $backup = $wire->database->backups();
     $backup->setDatabaseConfig($wire->config);
     $file = $backup->backup(['filename' => $file]);

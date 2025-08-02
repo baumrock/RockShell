@@ -16,7 +16,7 @@ class PwSetup extends Command
 
     // add gitignore
     $this->write('Updating .gitignore ...');
-    $dst = $this->app->docroot() . ".gitignore";
+    $dst = $this->app->wireRoot() . ".gitignore";
     $write = true;
     if (is_file($dst)) {
       if (!$this->confirm("$dst exists - overwrite it?", false)) {
@@ -48,7 +48,7 @@ class PwSetup extends Command
 
       // update config.php
       $this->write('Updating config.php ...');
-      $dst = $this->app->docroot() . "site/config.php";
+      $dst = $this->app->wireRoot() . "site/config.php";
       $content = file_get_contents($dst);
       $stub = file_get_contents($this->stub('config.php'));
       file_put_contents($dst, $content . $stub);
@@ -95,7 +95,7 @@ class PwSetup extends Command
    */
   public function removeComments()
   {
-    $config = $this->app->docroot() . "site/config.php";
+    $config = $this->app->wireRoot() . "site/config.php";
     if (!is_file($config)) return $this->error("config.php not found");
     $str = file_get_contents($config);
     $str = preg_replace("#\/\*\*\n([\S\s]*?)\*\/\n#m", "", $str);
@@ -109,7 +109,7 @@ class PwSetup extends Command
    */
   public function removeSalts()
   {
-    $config = $this->app->docroot() . "site/config.php";
+    $config = $this->app->wireRoot() . "site/config.php";
     if (!is_file($config)) return $this->error("config.php not found");
     $str = file_get_contents($config);
     $str = preg_replace("/Installer: Table Salt([\S\s]*?);/m", "Table Salt moved to config-local.php\n */", $str);

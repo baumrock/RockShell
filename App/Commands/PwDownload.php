@@ -20,7 +20,7 @@ class PwDownload extends Command
 
   public function handle()
   {
-    $path = $this->app->docroot();
+    $path = $this->app->wireRoot();
     chdir($path);
     $version = $this->argument('version')
       ?: $this->askWithCompletion(

@@ -9,7 +9,8 @@
   },
   "autoload": {
     "files": [
-      "Application.php"
+      "Application.php",
+      "Deployment.php"
     ],
     "psr-4": {
       "RockShell\\": "App/",

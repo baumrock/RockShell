@@ -1,0 +1,251 @@
+name: RockShell Deployment Setup
+
+on:
+  workflow_call:
+    inputs:
+      ENVIRONMENT:
+        required: true
+        type: string
+      SSH:
+        required: false
+        type: boolean
+        default: false
+      DEPLOY_NAME:
+        required: false
+        type: string
+    secrets:
+      SSH_KEY:
+        required: true
+      CI_TOKEN:
+        required: false
+      DBPASS:
+        required: true
+      USERAUTHSALT:
+        required: true
+    outputs:
+      DEPLOY_DST:
+        value: ${{ jobs.setup.outputs.DEPLOY_DST }}
+      DEPLOY_NAME:
+        value: ${{ jobs.setup.outputs.DEPLOY_NAME }}
+      SSH_PORT:
+        value: ${{ jobs.setup.outputs.SSH_PORT }}
+      DRY:
+        value: ${{ jobs.setup.outputs.DRY }}
+      SUBMODULES:
+        value: ${{ jobs.setup.outputs.SUBMODULES }}
+      BRANCH:
+        value: ${{ jobs.setup.outputs.BRANCH }}
+      SSH_USER:
+        value: ${{ jobs.setup.outputs.SSH_USER }}
+      SSH_HOST:
+        value: ${{ jobs.setup.outputs.SSH_HOST }}
+      DEPLOY_SRC:
+        value: ${{ jobs.setup.outputs.DEPLOY_SRC }}
+      RSYNC:
+        value: ${{ jobs.setup.outputs.RSYNC }}
+      KEEP:
+        value: ${{ jobs.setup.outputs.KEEP }}
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.ENVIRONMENT }}
+    outputs:
+      DEPLOY_NAME: ${{ steps.setupvars.outputs.DEPLOY_NAME }}
+      DEPLOY_DST: ${{ steps.setupvars.outputs.DEPLOY_DST }}
+      DRY: ${{ steps.setupvars.outputs.DRY }}
+      SUBMODULES: ${{ steps.setupvars.outputs.SUBMODULES }}
+      BRANCH: ${{ steps.setupvars.outputs.BRANCH }}
+      SSH_USER: ${{ steps.setupvars.outputs.SSH_USER }}
+      SSH_HOST: ${{ steps.setupvars.outputs.SSH_HOST }}
+      DEPLOY_SRC: ${{ steps.setupvars.outputs.DEPLOY_SRC }}
+      RSYNC: ${{ steps.setupvars.outputs.RSYNC }}
+      KEEP: ${{ steps.setupvars.outputs.KEEP }}
+      SSH_PORT: ${{ steps.setupvars.outputs.SSH_PORT }}
+    steps:
+      - name: 🛠 Setup Variables
+        id: setupvars
+        run: |
+
+          # Setup variables
+          HAS_ERRORS=false
+          SSH_PORT="${{ vars.SSH_PORT || 22 }}"
+          DRY="${{ vars.DRY == 'true' }}"
+          SUBMODULES="${{ vars.SUBMODULES == 'true' }}"
+          BRANCH="${GITHUB_REF##*/}"
+          SSH_USER="${{ vars.SSH_USER }}"
+          SSH_HOST="${{ vars.SSH_HOST }}"
+          KNOWN_HOSTS="${{ vars.KNOWN_HOSTS }}"
+          DEPLOY_SRC="${{ vars.DEPLOY_SRC || '/' }}"
+          DEPLOY_DST="${{ vars.DEPLOY_DST }}"
+          RSYNC="${{ vars.RSYNC }}"
+          KEEP="${{ vars.KEEP || 2 }}"
+          DEPLOY_NAME=${{ inputs.DEPLOY_NAME }}
+          if [ -z "$DEPLOY_NAME" ]; then
+            SHORT_SHA=$(echo ${GITHUB_SHA} | cut -c1-8)
+            CURRENT_DATE=$(date +%Y-%m-%d--%H-%M-%S)
+            DEPLOY_NAME="release---$CURRENT_DATE---$SHORT_SHA"
+          fi
+          DBHOST="${{ vars.DBHOST || 'localhost' }}"
+          DBNAME="${{ vars.DBNAME }}"
+          DBUSER="${{ vars.DBUSER || vars.DBNAME }}"
+          DBPASS="${{ secrets.DBPASS }}"
+          USERAUTHSALT="${{ secrets.USERAUTHSALT }}"
+          HTTPHOSTS="${{ vars.HTTPHOSTS }}"
+          DEBUG="${{ vars.DEBUG || false }}"
+
+          # special case for CI_TOKEN
+          TOKEN="✅ TOKEN:          not needed"
+          if [ "$SUBMODULES" = "true" ]; then
+            if [ -z "${{ secrets.CI_TOKEN }}" ]; then
+              TOKEN="❌ TOKEN:          secret is empty"
+              HAS_ERRORS=true
+            else
+              TOKEN="✅ TOKEN:          secret exists"
+            fi
+          fi
+
+          echo "----- General Setup -----"
+          echo "✅ ENVIRONMENT:    ${{ inputs.ENVIRONMENT }}"
+          echo "✅ BRANCH:         $BRANCH"
+          echo "✅ SUBMODULES:     $SUBMODULES"
+          echo "✅ DEPLOY_NAME:    $DEPLOY_NAME"
+          echo "$TOKEN"
+          echo "✅ DRY:            $DRY"
+
+          echo "----- SSH Setup -----"
+
+          if [ -n "$SSH_USER" ]; then
+            echo "✅ SSH_USER:       $SSH_USER"
+          else
+            echo "❌ SSH_USER:       variable must be set"
+            HAS_ERRORS=true
+          fi
+
+          if [ -n "$SSH_HOST" ]; then
+            echo "✅ SSH_HOST:       $SSH_HOST"
+          else
+            echo "❌ SSH_HOST:       variable must be set"
+            HAS_ERRORS=true
+          fi
+
+          echo "✅ SSH_PORT:       $SSH_PORT"
+
+          if [ -n "$KNOWN_HOSTS" ]; then
+            echo "✅ KNOWN_HOSTS:    exists"
+          else
+            echo "❌ KNOWN_HOSTS:    variable must be set"
+            HAS_ERRORS=true
+          fi
+
+          echo "----- Deployment Setup -----"
+
+          echo "✅ DEPLOY_SRC:     $DEPLOY_SRC"
+          if [[ "$DEPLOY_DST" == */ ]]; then
+            echo "⚠️ DEPLOY_DST:     trailing slash removed"
+            DEPLOY_DST=${DEPLOY_DST%/}
+          fi
+          if [ -n "$DEPLOY_DST" ]; then
+            echo "✅ DEPLOY_DST:     $DEPLOY_DST"
+          else
+            echo "❌ DEPLOY_DST:     variable must be set"
+            HAS_ERRORS=true
+          fi
+
+          echo "✅ RSYNC:          $RSYNC"
+          echo "✅ KEEP:           $KEEP"
+
+          echo "----- Config Setup -----"
+
+          echo "✅ DBHOST:         $DBHOST"
+          if [ -n "$DBNAME" ]; then
+            echo "✅ DBNAME:         $DBNAME"
+          else
+            echo "❌ DBNAME:         variable must be set"
+            HAS_ERRORS=true
+          fi
+          echo "✅ DBUSER:         $DBUSER"
+          if [ -n "$DBPASS" ]; then
+            echo "✅ DBPASS:         $DBPASS"
+          else
+            echo "❌ DBPASS:         secret must be set"
+            HAS_ERRORS=true
+          fi
+          if [ -n "$USERAUTHSALT" ]; then
+            echo "✅ USERAUTHSALT:   $USERAUTHSALT"
+          else
+            echo "❌ USERAUTHSALT:   secret must be set"
+            HAS_ERRORS=true
+          fi
+          # if httphosts does not start with [ and end with ] show error
+          if [[ ! "$HTTPHOSTS" =~ ^\[.*\]$ ]]; then
+            echo "❌ HTTPHOSTS:      must start with [ and end with ] (php array syntax)"
+            HAS_ERRORS=true
+          else
+            echo "✅ HTTPHOSTS:      $HTTPHOSTS"
+          fi
+          echo "✅ DEBUG:          $DEBUG"
+
+          echo "-----"
+
+          if [ "$HAS_ERRORS" = true ]; then
+            exit 1
+          else
+            echo "✅ All required variables are set"
+          fi
+
+          if [ "$DRY" = true ]; then
+            echo "⚠️ DRY run - skipping deployment"
+          fi
+
+          # Output all variables for workflow outputs
+          echo "DRY=$DRY" >> $GITHUB_OUTPUT
+          echo "SUBMODULES=$SUBMODULES" >> $GITHUB_OUTPUT
+          echo "BRANCH=$BRANCH" >> $GITHUB_OUTPUT
+          echo "SSH_USER=$SSH_USER" >> $GITHUB_OUTPUT
+          echo "SSH_HOST=$SSH_HOST" >> $GITHUB_OUTPUT
+          echo "SSH_PORT=$SSH_PORT" >> $GITHUB_OUTPUT
+          echo "DEPLOY_SRC=$DEPLOY_SRC" >> $GITHUB_OUTPUT
+          echo "DEPLOY_DST=$DEPLOY_DST" >> $GITHUB_OUTPUT
+          echo "DEPLOY_NAME=$DEPLOY_NAME" >> $GITHUB_OUTPUT
+          echo "RSYNC=$RSYNC" >> $GITHUB_OUTPUT
+          echo "KEEP=$KEEP" >> $GITHUB_OUTPUT
+
+  ssh:
+    runs-on: ubuntu-latest
+    needs: [setup]
+    if: ${{ inputs.SSH }}
+    environment: ${{ inputs.ENVIRONMENT }}
+    steps:
+      - name: 🕵 Connect via SSH and create release directory
+        run: |
+
+          # Setup SSH
+          install -m 600 -D /dev/null ~/.ssh/id_rsa
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
+          echo "${{ vars.KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+          sshExec() {
+            USER=${{ needs.setup.outputs.SSH_USER }}
+            HOST=${{ needs.setup.outputs.SSH_HOST }}
+            PORT=${{ needs.setup.outputs.SSH_PORT }}
+            ssh $USER@$HOST -p$PORT "$@"
+          }
+
+          # Check connection to the server
+          sshExec "echo '✅ Connection successful'"
+
+          # Check if the deploy directory exists
+          DST=${{ needs.setup.outputs.DEPLOY_DST }}
+          sshExec \
+            "if [ ! -d $DST ]; then
+              echo '❌ Directory $DST does not exist - please create it'
+              exit 1
+            else
+              echo '✅ Directory $DST exists'
+            fi"
+
+          # Create the release directory
+          NAME=${{ needs.setup.outputs.DEPLOY_NAME }}
+          DIR=$DST/tmp-$NAME
+          sshExec "mkdir -p $DIR"
+          echo "✅ Release directory $DIR created"

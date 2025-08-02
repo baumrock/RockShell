@@ -1,0 +1,138 @@
+name: RockShell Deployment
+
+on:
+  workflow_call:
+    inputs:
+      ENVIRONMENT:
+        required: true
+        type: string
+      # on the second run we read the deploy name from the input
+      # this is to make sure that DEPLOY_NAME is the same for all jobs
+      DEPLOY_NAME:
+        required: true
+        type: string
+    secrets:
+      SSH_KEY:
+        required: true
+      CI_TOKEN:
+        required: false
+      DBPASS:
+        required: true
+      USERAUTHSALT:
+        required: true
+
+jobs:
+  setup:
+    uses: baumrock/RockShell/.github/workflows/setup.yaml@dev
+    with:
+      ENVIRONMENT: ${{ inputs.ENVIRONMENT }}
+      DEPLOY_NAME: ${{ inputs.DEPLOY_NAME }}
+    secrets:
+      SSH_KEY: ${{ secrets.SSH_KEY }}
+      CI_TOKEN: ${{ secrets.CI_TOKEN }}
+      DBPASS: ${{ secrets.DBPASS }}
+      USERAUTHSALT: ${{ secrets.USERAUTHSALT }}
+
+  rsync:
+    runs-on: ubuntu-latest
+    needs: [setup]
+    environment: ${{ inputs.ENVIRONMENT }}
+    steps:
+      - name: 🕵 Setup SSH
+        run: |
+
+          # Setup SSH
+          install -m 600 -D /dev/null ~/.ssh/id_rsa
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
+          echo "${{ vars.KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+          echo "✅ SSH setup"
+
+      - name: 🚩 Set deployment flag
+        run: |
+
+          # create deploying flag file
+          sshExec() {
+            USER=${{ needs.setup.outputs.SSH_USER }}
+            HOST=${{ needs.setup.outputs.SSH_HOST }}
+            PORT=${{ needs.setup.outputs.SSH_PORT }}
+            ssh $USER@$HOST -p$PORT "$@"
+          }
+          DST=${{ needs.setup.outputs.DEPLOY_DST }}
+          sshExec "touch $DST/deploying"
+          echo "✅ Deployment flag set"
+
+      - name: 🚛 Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: ${{ needs.setup.outputs.SUBMODULES }}
+          token: ${{ secrets.CI_TOKEN }}
+
+      - name: 📋 List files in DEPLOY_SRC
+        run: ls ${{ github.workspace }}${{ needs.setup.outputs.DEPLOY_SRC }}
+
+      - name: 🚚 Deploy via RSYNC and Set Permissions
+        run: |
+
+          # prepare variables
+          USER=${{ needs.setup.outputs.SSH_USER }}
+          HOST=${{ needs.setup.outputs.SSH_HOST }}
+          PORT=${{ needs.setup.outputs.SSH_PORT }}
+          DST=${{ needs.setup.outputs.DEPLOY_DST }}
+          NAME=${{ needs.setup.outputs.DEPLOY_NAME }}
+          FROM=${{ github.workspace }}${{ needs.setup.outputs.DEPLOY_SRC }}
+          TO=$USER@$HOST:$DST/tmp-$NAME
+
+          # rsync the files to the server
+          rsync -avz --chmod=D755,F644 \
+            --exclude '.git' \
+            --exclude '/.ddev' \
+            ${{ needs.setup.outputs.RSYNC }} \
+            -e "ssh -p$PORT" $FROM $TO
+          echo "✅ rsync completed"
+
+  execute:
+    needs: [rsync, setup]
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.ENVIRONMENT }}
+    steps:
+      - name: 🐘 Execute Deployment
+        run: |
+
+          # Setup SSH
+          install -m 600 -D /dev/null ~/.ssh/id_rsa
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
+          echo "${{ vars.KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+          sshExec() {
+            USER=${{ needs.setup.outputs.SSH_USER }}
+            HOST=${{ needs.setup.outputs.SSH_HOST }}
+            PORT=${{ needs.setup.outputs.SSH_PORT }}
+            ssh $USER@$HOST -p$PORT "$@"
+          }
+          echo "✅ SSH setup"
+
+          # execute the deployment script
+          DST=${{ needs.setup.outputs.DEPLOY_DST }}
+          NAME=${{ needs.setup.outputs.DEPLOY_NAME }}
+          KEEP=${{ needs.setup.outputs.KEEP }}
+          sshExec "php $DST/tmp-$NAME/RockShell/deploy.php --keep $KEEP"
+          echo "✅ Deployment script executed"
+
+      - name: 🗑️ Cleanup
+        run: |
+
+          # remove all tmp-release-* folders
+          echo "Remove all tmp-release-* folders"
+          sshExec() {
+            USER=${{ needs.setup.outputs.SSH_USER }}
+            HOST=${{ needs.setup.outputs.SSH_HOST }}
+            PORT=${{ needs.setup.outputs.SSH_PORT }}
+            ssh $USER@$HOST -p$PORT "$@"
+          }
+          DST=${{ needs.setup.outputs.DEPLOY_DST }}
+          sshExec "rm -rf $DST/tmp-release-*"
+          echo "✅ tmp-release-* folders removed"
+
+          # remove deploying flag file
+          echo "Remove deploying flag file"
+          sshExec "rm -f $DST/deploying"
+          echo "✅ Deployment flag removed"

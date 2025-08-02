@@ -1,0 +1,78 @@
+name: Deploy to {environment}
+
+on:
+  push:
+    branches:
+      - {branchname}
+
+jobs:
+  ## DO NOT CHANGE THIS JOB
+  setup:
+    uses: baumrock/RockShell/.github/workflows/setup.yaml@main
+    with:
+      ENVIRONMENT: {environment}
+      SSH: true
+    secrets:
+      SSH_KEY: ${{ secrets.SSH_KEY }}
+      CI_TOKEN: ${{ secrets.CI_TOKEN }}
+      DBPASS: ${{ secrets.DBPASS }}
+      USERAUTHSALT: ${{ secrets.USERAUTHSALT }}
+
+  ## CHANGE THIS JOB TO MEET YOUR NEEDS
+  write-config:
+    needs: setup
+    runs-on: ubuntu-latest
+    environment: {environment}
+    steps:
+      - name: 🕵 Setup SSH Connection
+        run: |
+
+          # Setup SSH
+          install -m 600 -D /dev/null ~/.ssh/id_rsa
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
+          echo "${{ vars.KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+          echo "✅ SSH connection setup"
+
+      - name: 🧬 Create conf.php
+        run: |
+
+          # create conf.php
+          ## YOU CAN CUSTOMISE THIS CONFIG FILE TO YOUR NEEDS!
+          ## DO NOT PLACE SECRETS HERE! USE GITHUB SECRETS INSTEAD
+          ## SEE DBPASS AND USERAUTHSALT AS AN EXAMPLE
+          echo "<?php" > conf.php
+          echo "if (!defined('PROCESSWIRE')) die();" >> conf.php
+          echo "\$config->dbHost = '${{ vars.DBHOST || 'localhost' }}';" >> conf.php
+          echo "\$config->dbName = '${{ vars.DBNAME }}';" >> conf.php
+          echo "\$config->dbUser = '${{ vars.DBUSER || vars.DBNAME }}';" >> conf.php
+          echo "\$config->dbPass = '${{ secrets.DBPASS }}';" >> conf.php
+          echo "\$config->userAuthSalt = '${{ secrets.USERAUTHSALT }}';" >> conf.php
+          echo "\$config->httpHosts = [${{ vars.HTTPHOSTS }}];" >> conf.php
+          echo "\$config->debug = ${{ vars.DEBUG || false }};" >> conf.php
+          echo "✅ conf.php created"
+
+      - name: 🚀 Upload conf.php
+        run: |
+
+          # upload
+          DST=${{ needs.setup.outputs.DEPLOY_DST }}
+          NAME=${{ needs.setup.outputs.DEPLOY_NAME }}
+          USER=${{ vars.SSH_USER }}
+          HOST=${{ vars.SSH_HOST }}
+          PORT=${{ needs.setup.outputs.SSH_PORT }}
+          scp -P$PORT conf.php $USER@$HOST:$DST/tmp-$NAME/conf.php
+          echo "✅ conf.php uploaded"
+
+  ## DO NOT CHANGE THIS JOB
+  deploy:
+    needs: [setup, write-config]
+    uses: baumrock/RockShell/.github/workflows/deploy.yaml@main
+    if: ${{ needs.setup.outputs.DRY == 'false' }}
+    with:
+      ENVIRONMENT: {environment}
+      DEPLOY_NAME: ${{ needs.setup.outputs.DEPLOY_NAME }}
+    secrets:
+      SSH_KEY: ${{ secrets.SSH_KEY }}
+      CI_TOKEN: ${{ secrets.CI_TOKEN }}
+      DBPASS: ${{ secrets.DBPASS }}
+      USERAUTHSALT: ${{ secrets.USERAUTHSALT }}

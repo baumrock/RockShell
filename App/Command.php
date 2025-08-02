@@ -8,6 +8,7 @@ use LogicException;
 use ProcessWire\ProcessWire;
 use ProcessWire\User;
 use ReflectionClass;
+use stdClass;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -148,6 +149,42 @@ class Command extends SymfonyCommand
   }
 
   /**
+   * Disable output buffering (for direct streaming)
+   * @return void
+   */
+  private function disableOB()
+  {
+    // Turn off output buffering
+    ini_set('output_buffering', 'off');
+    // Turn off PHP output compression
+    ini_set('zlib.output_compression', false);
+    // Implicitly flush the buffer(s)
+    ini_set('implicit_flush', true);
+    ob_implicit_flush(true);
+    // Clear, and turn off output buffering
+    while (ob_get_level() > 0) {
+      // Get the curent level
+      $level = ob_get_level();
+      // End the buffering
+      ob_end_clean();
+      // If the current level has not changed, abort
+      if (ob_get_level() == $level) break;
+    }
+    // Disable apache output buffering/compression
+    if (function_exists('apache_setenv')) {
+      apache_setenv('no-gzip', '1');
+      apache_setenv('dont-vary', '1');
+    }
+  }
+
+  public function dump(mixed $data, string $method = 'write'): void
+  {
+    if (is_string($data)) $this->{$method}($data);
+    else if (is_array($data)) $this->{$method}(print_r($data, true));
+    else var_dump($data);
+  }
+
+  /**
    * Execute php command via php's exec()
    *
    * Usage:
@@ -213,6 +250,58 @@ class Command extends SymfonyCommand
       }
     }
     return $config;
+  }
+
+  /**
+   * Helper to outsorce getting the remote for some commands
+   * @return stdClass|false
+   */
+  public function getRemote(): stdClass|false
+  {
+    // get remotes from config
+    $remotes = $this->getConfig('remotes');
+    if (!$remotes or !count($remotes)) {
+      $this->error("No remotes defined in \$config->rockshell['remotes'] - see DbPull.php for help");
+      return false;
+    }
+
+    // if remote is not specified and we only have one remote
+    // we take that one to pull from
+    if (!$this->argument("remote") and count($remotes) === 1) {
+      foreach ($remotes as $remote) {
+        $remote = $remote;
+      }
+    } else {
+      $remoteName = $this->argument("remote") ?: $this->choice("Choose remote", array_keys($remotes));
+      if ($remoteName === 'p' && array_key_exists('production', $remotes)) {
+        $remoteName = 'production';
+      }
+      if ($remoteName === 's' && array_key_exists('staging', $remotes)) {
+        $remoteName = 'staging';
+      }
+      $remote = $remotes[$remoteName];
+    }
+
+    // make sure that rootPath and wireRoot properties are available
+    $remote = (object)[
+      'rootPath' => null,
+      'wireRoot' => null,
+      ...$remote,
+    ];
+
+    // sanitize paths
+    $rootPath = $this->normalizeSeparators($remote->rootPath);
+    $rootPath = rtrim($rootPath, "/");
+    $remote->rootPath = $rootPath;
+
+    if (!$remote->wireRoot) $remote->wireRoot = $remote->rootPath;
+    else {
+      $wireRoot = $this->normalizeSeparators($remote->wireRoot);
+      $wireRoot = rtrim($wireRoot, "/");
+      $remote->wireRoot = $wireRoot;
+    }
+
+    return $remote;
   }
 
   public function goodbye(): void
@@ -405,13 +494,12 @@ class Command extends SymfonyCommand
 
   /**
    * Execute command on remote via ssh
-   * @return void
    */
   public function sshExec($ssh, $cmd, $echo = false)
   {
     $cmd = str_replace("\n", " && ", $cmd);
     if ($echo) $this->write($cmd);
-    $this->exec("ssh $ssh \"$cmd\"");
+    return $this->exec("ssh $ssh \"$cmd\"", $echo);
   }
 
   /**
@@ -457,11 +545,16 @@ class Command extends SymfonyCommand
     $quiet = false,
     $brackets = "{}"
   ) {
+    if (!str_starts_with($src, '/')) $src = $this->stub($src);
     $src = realpath($src);
+    if (!file_exists($src)) {
+      $this->error("Stub file $src does not exist");
+      return;
+    }
     $content = file_get_contents($src);
     if (!$quiet) {
       $this->write("Writing $src");
-      $this->write("  to $dst");
+      $this->write("     to $dst");
     }
     $left = @$brackets[0];
     $right = @$brackets[1];
@@ -498,6 +591,21 @@ class Command extends SymfonyCommand
   }
 
   /**
+   * Execute a command and disable output buffering for direct streaming
+   *
+   * Example:
+   * $this->system("ping -c 4 processwire.com");
+   *
+   * @param mixed $cmd
+   * @return void
+   */
+  public function system($cmd): void
+  {
+    $this->disableOB();
+    system($cmd);
+  }
+
+  /**
    * Enforce trailing slash and normalize separators
    * @param string $path
    * @return string
@@ -515,7 +623,7 @@ class Command extends SymfonyCommand
   {
     if ($this->wire) return $this->wire;
     if ($this->wire === false) return;
-    chdir($this->app->docroot());
+    chdir($this->app->wireRoot());
 
     // pw is not yet there, eg when using pw:install
     if (!is_file("index.php")) return false;
