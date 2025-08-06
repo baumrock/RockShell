@@ -171,6 +171,7 @@ class Deployment
     $this->runShare();
     $this->runMigrate();
     $this->runUpdateSymlink();
+    $this->runWhenDone();
     $this->runCleanup();
 
     $this->ok('Deployment complete', true);
@@ -275,6 +276,18 @@ class Deployment
     $to = $newName;
     $this->echo("  --> $to");
     $this->exec("ln -snf $to $from");
+    $this->ok('Done');
+  }
+
+  private function runWhenDone()
+  {
+    $this->headline('Running deploy.whenDone.php');
+    $file = $this->targetPath() . '/deploy.whenDone.php';
+    if (file_exists($file)) {
+      $this->passthru("{$this->php} $file");
+    } else {
+      $this->echo("File $file does not exist, skipping");
+    }
     $this->ok('Done');
   }
 
