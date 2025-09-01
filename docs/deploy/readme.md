@@ -49,3 +49,44 @@ You can deploy any ProcessWire site with this workflow without installing RockMi
 ### Deployment Flag
 
 When a deployment is in progress, a special "deployment flag" file is created on the server. This file is used to indicate that a deployment is currently running, and can be checked by your application or by administrators to prevent conflicting operations or to display maintenance messages.
+
+## deploy.whenDone.php
+
+The `deploy.whenDone.php` file is a special script that runs automatically after a successful deployment. It's executed in the final stage of the deployment process, after all files have been transferred, migrations have run, and the symlink has been updated to point to the new release.
+
+### When it runs
+
+The script is executed by the `runWhenDone()` method in the `Deployment` class, which:
+
+1. Runs after the symlink has been updated to point to the new release
+2. Executes before the cleanup of old releases
+3. Only runs if the file exists in the new release directory
+4. Uses the same PHP interpreter as the rest of the deployment process
+
+### Purpose and Use Cases
+
+The `deploy.whenDone.php` file is perfect for:
+
+- **Cache clearing**: Clear application caches that might contain old data
+- **Service restarts**: Restart background services or workers
+- **Database cleanup**: Run post-deployment database maintenance
+- **File permissions**: Set correct permissions on uploaded files
+- **Health checks**: Verify the deployment was successful
+- **Notifications**: Send deployment notifications to team members
+
+### Example Implementation
+
+Here's the current implementation that clears a specific cache:
+
+```php
+<?php
+
+namespace ProcessWire;
+
+use function ProcessWire\wire;
+
+require_once __DIR__ . '/public/index.php';
+
+wire()->cache->delete('reactpdf-running');
+echo "reactpdf-running cache deleted\n";
+```

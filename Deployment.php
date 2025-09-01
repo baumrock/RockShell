@@ -13,6 +13,7 @@ class Deployment
   public $wireRoot = '';
   public $current = '';
   public $keep = 2;
+  public $newRootPath = '';
 
   private $php = 'php';
   private $delete = [];
@@ -171,6 +172,7 @@ class Deployment
     $this->runShare();
     $this->runMigrate();
     $this->runUpdateSymlink();
+    $this->runWhenDone();
     $this->runCleanup();
 
     $this->ok('Deployment complete', true);
@@ -268,6 +270,7 @@ class Deployment
     $parentDir = dirname($root);
     $this->exec("cd $parentDir && mv $oldName $newName");
     $this->ok('Done');
+    $this->newRootPath = $parentDir . "/$newName";
 
     $this->headline('Updating the "current" symlink');
     $from = $this->targetPath() . "/current";
@@ -275,6 +278,18 @@ class Deployment
     $to = $newName;
     $this->echo("  --> $to");
     $this->exec("ln -snf $to $from");
+    $this->ok('Done');
+  }
+
+  private function runWhenDone()
+  {
+    $this->headline('Running deploy.whenDone.php');
+    $file = $this->newRootPath . '/deploy.whenDone.php';
+    if (file_exists($file)) {
+      $this->passthru("{$this->php} $file");
+    } else {
+      $this->echo("File $file does not exist, skipping");
+    }
     $this->ok('Done');
   }
 

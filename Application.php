@@ -165,6 +165,7 @@ class Application extends ConsoleApplication
   }
 
   /**
+   * Project root with trailing slash
    * @return string
    */
   public function rootPath()
