@@ -1,3 +1,15 @@
+## [3.9.0](https://github.com/baumrock/RockShell/compare/v3.8.0...v3.9.0) (2025-09-01)
+
+
+### Features
+
+* add whenDone callback ([6b1400a](https://github.com/baumrock/RockShell/commit/6b1400a59b05f9ff4f51ad82a5f8d251b70cd48e))
+
+
+### Bug Fixes
+
+* wrong path for deploy.whenDone.php ([0408b86](https://github.com/baumrock/RockShell/commit/0408b8670853451c7bdeab747eb922ee7e6b0997))
+
 ## [3.8.0](https://github.com/baumrock/RockShell/compare/v3.7.0...v3.8.0) (2025-08-02)
 
 
@@ -36,11 +48,4 @@
 ### Bug Fixes
 
 * fix [#19](https://github.com/baumrock/RockShell/issues/19) double slash in file path ([a28ef43](https://github.com/baumrock/RockShell/commit/a28ef4388386132e77d7f73a6b0a2017b53f339c))
-
-## [3.5.2](https://github.com/baumrock/RockShell/compare/v3.5.1...v3.5.2) (2025-01-21)
-
-
-### Bug Fixes
-
-* security update of dependencies ([0788ac2](https://github.com/baumrock/RockShell/commit/0788ac271e42cded79fd3068ec492d782ab8d7ed))
 
