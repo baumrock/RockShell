@@ -45,6 +45,8 @@ on:
         value: ${{ jobs.setup.outputs.RSYNC }}
       KEEP:
         value: ${{ jobs.setup.outputs.KEEP }}
+      PHP_COMMAND:
+        value: ${{ jobs.setup.outputs.PHP_COMMAND }}
 
 jobs:
   setup:
@@ -62,6 +64,7 @@ jobs:
       RSYNC: ${{ steps.setupvars.outputs.RSYNC }}
       KEEP: ${{ steps.setupvars.outputs.KEEP }}
       SSH_PORT: ${{ steps.setupvars.outputs.SSH_PORT }}
+      PHP_COMMAND: ${{ steps.setupvars.outputs.PHP_COMMAND }}
     steps:
       - name: 🛠 Setup Variables
         id: setupvars
@@ -80,6 +83,7 @@ jobs:
           DEPLOY_DST="${{ vars.DEPLOY_DST }}"
           RSYNC="${{ vars.RSYNC }}"
           KEEP="${{ vars.KEEP || 2 }}"
+          PHP_COMMAND="${{ vars.PHP_COMMAND || 'php' }}"
           DEPLOY_NAME=${{ inputs.DEPLOY_NAME }}
           if [ -z "$DEPLOY_NAME" ]; then
             SHORT_SHA=$(echo ${GITHUB_SHA} | cut -c1-8)
@@ -154,6 +158,7 @@ jobs:
 
           echo "✅ RSYNC:          $RSYNC"
           echo "✅ KEEP:           $KEEP"
+          echo "✅ PHP_COMMAND:    $PHP_COMMAND"
 
           echo "----- Config Setup -----"
 
@@ -210,6 +215,7 @@ jobs:
           echo "DEPLOY_NAME=$DEPLOY_NAME" >> $GITHUB_OUTPUT
           echo "RSYNC=$RSYNC" >> $GITHUB_OUTPUT
           echo "KEEP=$KEEP" >> $GITHUB_OUTPUT
+          echo "PHP_COMMAND=$PHP_COMMAND" >> $GITHUB_OUTPUT
 
   ssh:
     runs-on: ubuntu-latest
