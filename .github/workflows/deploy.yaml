@@ -114,7 +114,8 @@ jobs:
           DST=${{ needs.setup.outputs.DEPLOY_DST }}
           NAME=${{ needs.setup.outputs.DEPLOY_NAME }}
           KEEP=${{ needs.setup.outputs.KEEP }}
-          sshExec "php $DST/tmp-$NAME/RockShell/deploy.php --keep $KEEP"
+          PHP_CMD=${{ needs.setup.outputs.PHP_COMMAND }}
+          sshExec "$PHP_CMD $DST/tmp-$NAME/RockShell/deploy.php --keep $KEEP"
           echo "✅ Deployment script executed"
 
       - name: 🗑️ Cleanup

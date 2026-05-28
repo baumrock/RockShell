@@ -19,6 +19,7 @@ use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\DomCrawler\Form;
 use Symfony\Component\DomCrawler\Link;
 use Symfony\Component\Process\PhpProcess;
+use Symfony\Component\Process\Process;
 
 /**
  * Simulates a browser.
@@ -45,7 +46,9 @@ abstract class AbstractBrowser
     /** @psalm-var TResponse */
     protected object $response;
     protected Crawler $crawler;
+    /** @deprecated since Symfony 7.4, to be removed in Symfony 8 */
     protected bool $useHtml5Parser = true;
+    protected string|false $wrapContentPattern = false;
     protected bool $insulated = false;
     protected ?string $redirect;
     protected bool $followRedirects = true;
@@ -114,7 +117,7 @@ abstract class AbstractBrowser
      */
     public function insulate(bool $insulated = true): void
     {
-        if ($insulated && !class_exists(\Symfony\Component\Process\Process::class)) {
+        if ($insulated && !class_exists(Process::class)) {
             throw new LogicException('Unable to isolate requests as the Symfony Process Component is not installed. Try running "composer require symfony/process".');
         }
 
@@ -203,14 +206,31 @@ abstract class AbstractBrowser
     /**
      * Sets whether parsing should be done using "masterminds/html5".
      *
+     * @deprecated since Symfony 7.4, Symfony 8 will unconditionally use the native HTML5 parser
+     *
      * @return $this
      */
     public function useHtml5Parser(bool $useHtml5Parser): static
     {
+        if (\PHP_VERSION_ID >= 80400) {
+            trigger_deprecation('symfony/browser-kit', '7.4', 'Method "%s()" is deprecated. Symfony 8 will unconditionally use the native HTML5 parser.', __METHOD__);
+        }
+
         $this->useHtml5Parser = $useHtml5Parser;
 
         return $this;
     }
+
+    /**
+     * Sets the content wrapper format.
+     *
+     * @example <table>%s</table>
+     */
+    public function wrapContent(false|string $pattern): void
+    {
+        $this->wrapContentPattern = $pattern;
+    }
+
 
     /**
      * Returns the current BrowserKit Response instance.
@@ -396,7 +416,11 @@ abstract class AbstractBrowser
             return $this->crawler = $this->followRedirect();
         }
 
-        $this->crawler = $this->createCrawlerFromContent($this->internalRequest->getUri(), $this->internalResponse->getContent(), $this->internalResponse->getHeader('Content-Type') ?? '');
+        $responseContent = $this->internalResponse->getContent();
+        if ($this->wrapContentPattern) {
+            $responseContent = \sprintf($this->wrapContentPattern, $responseContent);
+        }
+        $this->crawler = $this->createCrawlerFromContent($this->internalRequest->getUri(), $responseContent, $this->internalResponse->getHeader('Content-Type') ?? '');
 
         // Check for meta refresh redirect
         if ($this->followMetaRefresh && null !== $redirect = $this->getMetaRefreshUrl()) {
@@ -461,9 +485,9 @@ abstract class AbstractBrowser
     /**
      * Returns the script to execute when the request must be insulated.
      *
-     * @psalm-param TRequest $request
-     *
      * @param object $request An origin request instance
+     *
+     * @psalm-param TRequest $request
      *
      * @return string
      *
@@ -567,7 +591,7 @@ abstract class AbstractBrowser
 
         $request = $this->internalRequest;
 
-        if (\in_array($this->internalResponse->getStatusCode(), [301, 302, 303])) {
+        if (\in_array($this->internalResponse->getStatusCode(), [301, 302, 303], true)) {
             $method = 'GET';
             $files = [];
             $content = null;
@@ -661,7 +685,7 @@ abstract class AbstractBrowser
             $uri = $path.$uri;
         }
 
-        return preg_replace('#^(.*?//[^/]+)\/.*$#', '$1', $currentUri).$uri;
+        return preg_replace('#^(.*?//[^/?]+)[/?].*$#', '$1', $currentUri).$uri;
     }
 
     /**
