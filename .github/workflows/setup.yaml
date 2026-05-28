@@ -166,13 +166,13 @@ jobs:
           fi
           echo "✅ DBUSER:         $DBUSER"
           if [ -n "$DBPASS" ]; then
-            echo "✅ DBPASS:         $DBPASS"
+            echo "✅ DBPASS:         ***"
           else
             echo "❌ DBPASS:         secret must be set"
             HAS_ERRORS=true
           fi
           if [ -n "$USERAUTHSALT" ]; then
-            echo "✅ USERAUTHSALT:   $USERAUTHSALT"
+            echo "✅ USERAUTHSALT:   ***"
           else
             echo "❌ USERAUTHSALT:   secret must be set"
             HAS_ERRORS=true
