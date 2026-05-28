@@ -1,3 +1,15 @@
+## [3.10.0](https://github.com/baumrock/RockShell/compare/v3.9.0...v3.10.0) (2026-05-28)
+
+
+### Features
+
+* make php command configurable ([e42ad52](https://github.com/baumrock/RockShell/commit/e42ad524a4794a34322c51fbfd316bfeaa474c64))
+
+
+### Bug Fixes
+
+* do not show secrets ([d65919d](https://github.com/baumrock/RockShell/commit/d65919da126c88d8042fe621aca0af4c2a4c7fd4))
+
 ## [3.9.0](https://github.com/baumrock/RockShell/compare/v3.8.0...v3.9.0) (2025-09-01)
 
 
@@ -41,11 +53,4 @@
 ### Bug Fixes
 
 * remove try/catch to make development easier ([1723a8f](https://github.com/baumrock/RockShell/commit/1723a8fc09e91c3f9cd6cf801ed4daaa48182598))
-
-## [3.5.3](https://github.com/baumrock/RockShell/compare/v3.5.2...v3.5.3) (2025-01-21)
-
-
-### Bug Fixes
-
-* fix [#19](https://github.com/baumrock/RockShell/issues/19) double slash in file path ([a28ef43](https://github.com/baumrock/RockShell/commit/a28ef4388386132e77d7f73a6b0a2017b53f339c))
 
