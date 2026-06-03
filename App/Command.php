@@ -633,7 +633,7 @@ class Command extends SymfonyCommand
     if ($seconds < 1) return round($seconds * 1000) . 'ms';
     if ($seconds < 60) return round($seconds, 1) . 's';
     $m = (int) floor($seconds / 60);
-    $r = (int) round($seconds % 60);
+    $r = (int) round(fmod($seconds, 60));
     return $r ? "{$m}m {$r}s" : "{$m}m";
   }
 
