@@ -38,6 +38,9 @@ class DbPull extends Command
     $ssh = $remote->ssh;
     $folder = trim(DbDump::backupdir, "/");
 
+    $remoteDump = "{$remote->wireRoot}/$folder/tmp.sql";
+    $localDump = "{$localWireRoot}/$folder/tmp.sql";
+
     $this->write("Creating remote dump...");
     $php = $this->option('php') ?: $this->getConfig('remotePHP') ?: 'php';
     $cmd = "$php RockShell/rock db:dump -f tmp.sql";
@@ -45,19 +48,37 @@ class DbPull extends Command
     $this->write("  Remote rootPath: $remote->rootPath");
     $this->write("  Remote wireRoot: $remote->wireRoot");
     $this->write("  Remote command: $cmd");
+    $tDump = microtime(true);
     $this->sshExec($ssh, "cd $remote->rootPath && $cmd");
+    $this->write("  Remote dump done ({$this->elapsedStr(microtime(true) - $tDump)})");
 
-    $this->write("Copying dump to local...");
-    $localDump = "{$localWireRoot}/$folder/tmp.sql";
-    $this->exec("scp $ssh:{$remote->wireRoot}/$folder/tmp.sql $localDump");
+    $dumpBytes = $this->remoteFileSize($ssh, $remoteDump);
+    $sizeHint = $dumpBytes ? ' (' . $this->bytesStr($dumpBytes) . ')' : '';
+
+    $this->write("Copying dump to local{$sizeHint} ...");
+    $tCopy = microtime(true);
+    $this->exec("scp $ssh:$remoteDump $localDump");
+    if (!$dumpBytes && is_file($localDump)) {
+      $size = filesize($localDump);
+      if ($size !== false) $dumpBytes = (int) $size;
+    }
+    $copyStats = $this->elapsedStr(microtime(true) - $tCopy);
+    if ($dumpBytes) {
+      $copyStats .= ', ' . $this->bytesStr($dumpBytes);
+    }
+    $this->write("  Copy done ({$copyStats})");
 
     $this->write("Removing remote dump...");
-    $this->sshExec($ssh, "rm -rf {$remote->wireRoot}/$folder/tmp.sql");
+    $tRm = microtime(true);
+    $this->sshExec($ssh, "rm -rf $remoteDump");
+    $this->write("  Remote cleanup done ({$this->elapsedStr(microtime(true) - $tRm)})");
 
+    $tRestore = microtime(true);
     $this->call("db:restore", [
       '--y' => true,
       '--file' => 'tmp.sql',
     ]);
+    $this->write("  Restore done ({$this->elapsedStr(microtime(true) - $tRestore)})");
 
     if (!$this->option('keep')) {
       $this->write("Removing tmp.sql...");

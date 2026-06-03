@@ -616,6 +616,37 @@ class Command extends SymfonyCommand
   }
 
   /**
+   * Human-readable byte size via ProcessWire (compact, e.g. 315MB).
+   */
+  protected function bytesStr(int $bytes): string
+  {
+    $wire = $this->wire();
+    if (!$wire) return (string) $bytes;
+    return $wire->sanitizer->getNumberTools()->bytesToStr($bytes, ['small' => true]);
+  }
+
+  /**
+   * Format elapsed seconds for command progress output.
+   */
+  protected function elapsedStr(float $seconds): string
+  {
+    if ($seconds < 1) return round($seconds * 1000) . 'ms';
+    if ($seconds < 60) return round($seconds, 1) . 's';
+    $m = (int) floor($seconds / 60);
+    $r = (int) round($seconds % 60);
+    return $r ? "{$m}m {$r}s" : "{$m}m";
+  }
+
+  /**
+   * Remote file size in bytes (0 if stat fails).
+   */
+  protected function remoteFileSize(string $ssh, string $path): int
+  {
+    $out = $this->sshExec($ssh, 'stat -c%s ' . escapeshellarg($path), false);
+    return isset($out[0]) ? (int) trim((string) $out[0]) : 0;
+  }
+
+  /**
    * Get wire instance
    * @return ProcessWire|false
    */
