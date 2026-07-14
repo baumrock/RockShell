@@ -240,12 +240,10 @@ class Command extends SymfonyCommand
    */
   public function getConfig($prop = null, $quiet = true)
   {
-    $wire = $this->wire();
-    if ($wire) {
-      $config = $wire->config->rockshell;
-    } else {
-      require_once __DIR__ . '/loadRockshellConfig.php';
-      $config = \ProcessWire\rockshellLoadConfig($this->app->wireRoot() . 'site/config-local.php');
+    $config = RockshellConfig::load($this->app->wireRoot() . 'site/config-local.php');
+    if (!$config) {
+      $wire = $this->wire();
+      if ($wire) $config = (array) $wire->config->rockshell;
     }
     if (!$config) return false;
     if ($prop) {

@@ -48,12 +48,15 @@ class DbPull extends Command
     $this->write("  Remote wireRoot: $remote->wireRoot");
     $this->write("  Remote command: $cmd");
     $tDump = microtime(true);
-    $this->sshExec($ssh, "cd $remote->rootPath && $cmd");
+    $dumpOut = $this->sshExec($ssh, "cd $remote->rootPath && $cmd");
     $this->write("  Remote dump done ({$this->elapsedStr(microtime(true) - $tDump)})");
 
     $check = $this->sshExec($ssh, "test -s $remoteDump && echo exists");
     if (!in_array('exists', $check ?: [], true)) {
       $this->error("Remote dump failed or is empty: $remoteDump");
+      if ($dumpOut) $this->write("Remote dump output:\n" . $this->str($dumpOut));
+      $ls = $this->sshExec($ssh, 'ls -la ' . escapeshellarg(dirname($remoteDump)) . ' 2>&1');
+      if ($ls) $this->write("Remote backup dir:\n" . $this->str($ls));
       return self::FAILURE;
     }
 

@@ -58,10 +58,10 @@ class DbDump extends Command
       $size = wireBytesStr((int)filesize($file), true);
       $this->write("Filesize: $size");
       $this->write("");
-    } else {
-      $this->success("Backup failed: " . implode("<br>", $backup->errors()) . "\n");
+      return self::SUCCESS;
     }
 
-    return self::SUCCESS;
+    $this->error("Backup failed: " . implode("\n", $backup->errors()));
+    return self::FAILURE;
   }
 }
