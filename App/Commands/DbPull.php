@@ -31,13 +31,12 @@ class DbPull extends Command
 
   public function handle()
   {
-    $wire = $this->requireProcessWire();
     $remote = $this->getRemote();
-    $localWireRoot = rtrim($wire->config->paths->root, "/");
+    if (!$remote) return self::FAILURE;
 
+    $localWireRoot = rtrim($this->app->wireRoot(), "/");
     $ssh = $remote->ssh;
     $folder = trim(DbDump::backupdir, "/");
-
     $remoteDump = "{$remote->wireRoot}/$folder/tmp.sql";
     $localDump = "{$localWireRoot}/$folder/tmp.sql";
 
@@ -52,12 +51,22 @@ class DbPull extends Command
     $this->sshExec($ssh, "cd $remote->rootPath && $cmd");
     $this->write("  Remote dump done ({$this->elapsedStr(microtime(true) - $tDump)})");
 
+    $check = $this->sshExec($ssh, "test -s $remoteDump && echo exists");
+    if (!in_array('exists', $check ?: [], true)) {
+      $this->error("Remote dump failed or is empty: $remoteDump");
+      return self::FAILURE;
+    }
+
     $dumpBytes = $this->remoteFileSize($ssh, $remoteDump);
     $sizeHint = $dumpBytes ? ' (' . $this->bytesStr($dumpBytes) . ')' : '';
 
     $this->write("Copying dump to local{$sizeHint} ...");
     $tCopy = microtime(true);
     $this->exec("scp $ssh:$remoteDump $localDump");
+    if (!is_file($localDump) || filesize($localDump) === 0) {
+      $this->error("Failed to copy dump to local: $localDump");
+      return self::FAILURE;
+    }
     if (!$dumpBytes && is_file($localDump)) {
       $size = filesize($localDump);
       if ($size !== false) $dumpBytes = (int) $size;
@@ -73,6 +82,7 @@ class DbPull extends Command
     $this->sshExec($ssh, "rm -rf $remoteDump");
     $this->write("  Remote cleanup done ({$this->elapsedStr(microtime(true) - $tRm)})");
 
+    $this->requireProcessWire();
     $tRestore = microtime(true);
     $this->call("db:restore", [
       '--y' => true,

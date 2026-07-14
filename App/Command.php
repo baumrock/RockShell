@@ -240,7 +240,13 @@ class Command extends SymfonyCommand
    */
   public function getConfig($prop = null, $quiet = true)
   {
-    $config = $this->wire()->config->rockshell;
+    $wire = $this->wire();
+    if ($wire) {
+      $config = $wire->config->rockshell;
+    } else {
+      require_once __DIR__ . '/loadRockshellConfig.php';
+      $config = \ProcessWire\rockshellLoadConfig($this->app->wireRoot() . 'site/config-local.php');
+    }
     if (!$config) return false;
     if ($prop) {
       if (array_key_exists($prop, $config)) return $config[$prop];
@@ -289,8 +295,13 @@ class Command extends SymfonyCommand
       ...$remote,
     ];
 
+    // documented config key is "dir", older commands use "rootPath"
+    if (!$remote->rootPath && !empty($remote->dir)) {
+      $remote->rootPath = $remote->dir;
+    }
+
     // sanitize paths
-    $rootPath = $this->normalizeSeparators($remote->rootPath);
+    $rootPath = $this->normalizeSeparators($remote->rootPath ?? '');
     $rootPath = rtrim($rootPath, "/");
     $remote->rootPath = $rootPath;
 
