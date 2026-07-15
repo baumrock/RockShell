@@ -25,6 +25,8 @@ class DbRestore extends Command
 
   public function handle()
   {
+    // Stale FileCompiler WireCache (e.g. after db:pull) prevents ProcessWire bootstrap.
+    $this->clearFileCompilerCache();
     $wire = $this->requireProcessWire(); // Get ProcessWire or exit
     $file = $this->option("file");
 
@@ -82,13 +84,20 @@ class DbRestore extends Command
       $this->warn("Password was reset to a random string!\n");
     }
 
+    // Restored WireCache rows for FileCompiler often reference production paths/hashes.
+    if ($wire->config->moduleCompile) {
+      $this->write("Clearing FileCompiler cache...");
+      $this->clearFileCompilerCache($wire);
+    }
+
     // run migrations?
     if (
       $this->option('y') or $this->option("migrate")
       or $this->confirm("Do you want to run migrations now?")
     ) {
       $this->warn("\nRunning migrations...");
-      $this->exec("php site/modules/RockMigrations/migrate.php");
+      $migrate = $this->app->wireRoot() . 'site/modules/RockMigrations/migrate.php';
+      $this->exec('php ' . escapeshellarg($migrate));
     }
 
     // show login message

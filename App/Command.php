@@ -656,6 +656,42 @@ class Command extends SymfonyCommand
   }
 
   /**
+   * Clear FileCompiler filesystem cache and WireCache DB rows.
+   * Use before ProcessWire bootstrap when restored DB cache blocks module compilation.
+   *
+   * @param ProcessWire|null $wire When set, delete via ProcessWire database API.
+   */
+  protected function clearFileCompilerCache($wire = null): void
+  {
+    $wireRoot = rtrim($this->app->wireRoot(), '/');
+    $fileCompilerDir = $wireRoot . '/site/assets/cache/FileCompiler';
+    if (is_dir($fileCompilerDir)) {
+      $this->exec('rm -rf ' . escapeshellarg($fileCompilerDir), false);
+    }
+
+    if ($wire) {
+      try {
+        $wire->database->exec("DELETE FROM caches WHERE name LIKE 'FileCompiler__%'");
+      } catch (\Throwable $e) {
+      }
+      return;
+    }
+
+    try {
+      require_once $wireRoot . '/wire/core/ProcessWire.php';
+      $config = ProcessWire::buildConfig($wireRoot);
+      if (empty($config->dbName)) return;
+      $port = $config->dbPort ?: '3306';
+      $dsn = "mysql:host={$config->dbHost};dbname={$config->dbName};port={$port};charset=utf8mb4";
+      $pdo = new \PDO($dsn, $config->dbUser, $config->dbPass, [
+        \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
+      ]);
+      $pdo->exec("DELETE FROM caches WHERE name LIKE 'FileCompiler__%'");
+    } catch (\Throwable $e) {
+    }
+  }
+
+  /**
    * Get wire instance
    * @return ProcessWire|false
    */
@@ -663,20 +699,24 @@ class Command extends SymfonyCommand
   {
     if ($this->wire) return $this->wire;
     if ($this->wire === false) return;
-    chdir($this->app->wireRoot());
+
+    $rootPath = rtrim($this->app->rootPath(), '/');
+    $wireRoot = rtrim($this->app->wireRoot(), '/');
+    chdir($rootPath);
+    $indexFile = $wireRoot . '/index.php';
 
     // pw is not yet there, eg when using pw:install
-    if (!is_file("index.php")) return false;
+    if (!is_file($indexFile)) return false;
 
     // pw is here but not installed
-    if (is_file("install.php")) {
+    if (is_file($wireRoot . '/install.php')) {
       $this->alert("ProcessWire exists but is not installed");
       $this->wire = false;
       return false;
     }
 
     try {
-      include 'index.php';
+      include $indexFile;
       $this->wire = $wire;
 
       // Set up superuser permissions when ProcessWire is successfully loaded
