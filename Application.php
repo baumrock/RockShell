@@ -97,6 +97,7 @@ class Application extends ConsoleApplication
    * /RockShell/App/Commands/
    * /site/modules/RockShell/Commands
    * /site/assets/RockShell/Commands
+   * (that folder only — never all of site/assets; uploads make command startup walk for minutes)
    *
    * It will also take care of loading the base command from /RockShell/Command.php
    *
@@ -107,7 +108,7 @@ class Application extends ConsoleApplication
     $roots = [
       $this->rootPath . "RockShell/App/",
       $this->wireRoot . "site/modules",
-      $this->wireRoot . "site/assets",
+      $this->wireRoot . "site/assets/RockShell",
     ];
     $files = array();
     foreach ($roots as $root) {
